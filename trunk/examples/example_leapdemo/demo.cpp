@@ -1,13 +1,12 @@
-/* -*-c++-*- OpenSceneGraph - Copyright (C) 1998-2010 Robert Osfield
+/*
+ * Example leapdemo
+ * Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
  *
- * This application is open source and may be redistributed and/or modified
- * freely and without restriction, both in commercial and non commercial applications,
- * as long as this copyright notice is maintained.
- *
- * This application is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+ * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*/
+ *
+ */
 
 #include <osgDB/ReadFile>
 #include <osgUtil/Optimizer>
