@@ -3,3 +3,11 @@
   * Build support for GCC
   * Build support for MSVC++ 2010
   * Build support for MSVC++ 2012
+  * Rework CMake script:
+    * Check respect of Debug and Release versions and possible mixing
+    * When I have manually defined LEAP_LIBRARY in the
+cmake-gui, defining both debug and optimized libraries manually (using
+the debug and optimized tags), the example fails to build, because
+both debug and release libraries are added to the link together,
+including even nonsense like debug.lib and release.lib (CMake seems to
+be interpreting the tags as additional libraries ...) 
