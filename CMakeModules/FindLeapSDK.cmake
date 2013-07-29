@@ -36,6 +36,20 @@ FIND_LIBRARY(LEAP_LIBRARY
     /usr/freeware/lib64
 )
 
+FIND_LIBRARY(LEAP_LIBRARY_DEBUG 
+    NAMES Leap${CMAKE_DEBUG_POSTFIX}
+    PATHS
+    $ENV{LEAPSDK_DIR}/lib
+    $ENV{LEAPSDK_DIR}
+	${CMAKE_INSTALL_PREFIX}/lib
+    ~/Library/Frameworks
+    /Library/Frameworks
+    /usr/local/lib
+    /usr/lib
+    /opt/lib
+    /usr/freeware/lib64
+)
+
 SET(LEAP_FOUND "NO")
 IF(LEAP_LIBRARY AND LEAP_INCLUDE_DIR)
     SET(LEAP_FOUND "YES")

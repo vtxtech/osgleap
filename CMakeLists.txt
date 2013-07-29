@@ -1,9 +1,17 @@
-# CMake stuff for osgLeap created by Johannes Scholz
+#
+# CMake Build System for osgLeap
+# Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+#
+# This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+# but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
 
 cmake_minimum_required(VERSION 2.8)
  
 PROJECT(osgLeap)
 
+SET(CMAKE_DEBUG_POSTFIX "d")
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 SET(OSG_DIR "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Path where to find the osg installation")
 
@@ -14,7 +22,7 @@ INCLUDE(OsgMacroUtils)
 #######################################
 SET(OSGLEAP_MAJOR_VERSION 0)
 SET(OSGLEAP_MINOR_VERSION 1)
-SET(OSGLEAP_PATCH_VERSION 0)
+SET(OSGLEAP_PATCH_VERSION 1)
 
 SET(OSGLEAP_VERSION ${OSGLEAP_MAJOR_VERSION}.${OSGLEAP_MINOR_VERSION}.${OSGLEAP_PATCH_VERSION})
 
