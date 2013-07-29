@@ -1,0 +1,5 @@
+#summary ToDo-Page for osgLeap
+= List of open issues =
+  * Build support for GCC
+  * Build support for MSVC++ 2010
+  * Build support for MSVC++ 2012
