@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef OSGLEAP_LEAP_MANIPULATOR
-#define OSGLEAP_LEAP_MANIPULATOR 1
+#ifndef OSGLEAP_LEAPMANIPULATOR
+#define OSGLEAP_LEAPMANIPULATOR 1
 
 #include <osgLeap/Export>
 

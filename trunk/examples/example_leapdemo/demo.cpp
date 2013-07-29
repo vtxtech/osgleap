@@ -11,6 +11,7 @@
 #include <osgDB/ReadFile>
 #include <osgUtil/Optimizer>
 #include <osgViewer/Viewer>
+#include <osgViewer/ViewerEventHandlers>
 
 #include <osgLeap/LeapManipulator>
 
@@ -45,6 +46,8 @@ int main(int argc, char** argv)
         arguments.getApplicationUsage()->write(std::cout,osg::ApplicationUsage::COMMAND_LINE_OPTION);
         return 1;
     }
+
+	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
 
     viewer.setCameraManipulator( new osgLeap::LeapManipulator() );
 
