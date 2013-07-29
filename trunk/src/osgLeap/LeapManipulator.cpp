@@ -25,7 +25,8 @@ namespace osgLeap {
 			leftHandID_(-1),
 			rightHandID_(-1),
 			handsDistance_(0.0f),
-			lastFrameStamp_(0.0f)
+			lastFrameStamp_(0.0f),
+			sceneRadius_(1.0f)
 		{
 			
 		}
@@ -42,6 +43,11 @@ namespace osgLeap {
 		virtual void onFocusGained(const Leap::Controller&);
 		virtual void onFocusLost(const Leap::Controller&);
 
+		void setSceneRadius(double radius) {
+			if (radius <= 0.0f) { radius = 1.0f; }
+			sceneRadius_ = radius;
+		}
+
 	private:
 		int32_t leftHandID_;
 		int32_t rightHandID_;
@@ -49,6 +55,7 @@ namespace osgLeap {
 		Leap::Vector lastPositionLeftHand_;
 		Leap::Vector lastPositionRightHand_;
 		double handsDistance_;
+		double sceneRadius_;
 
 		osg::ref_ptr<LeapManipulator> manipulator_;
 		int currentAction_;
@@ -152,12 +159,14 @@ namespace osgLeap {
 			rot = manipulator_->getMatrix().getRotate();
 			trans = manipulator_->getMatrix().getTrans();
 
-			// Rotate Leap axes to match OSG camera axes
+			// Calculate delta position (movement)
 			osg::Vec3 deltaPos = osg::Vec3(-(handRight.stabilizedPalmPosition().x-lastPositionRightHand_.x), -(handRight.stabilizedPalmPosition().y-lastPositionRightHand_.y), -(handRight.stabilizedPalmPosition().z-lastPositionRightHand_.z));
 			if (currentAction_ & LeapManipulator::LM_Pan) {
 				if (deltaPos.x() != 0.0f || deltaPos.y() != 0.0f || deltaPos.z() != 0.0f) { 
-					double factor = 2*manipulator_->getSceneRadius(); // scale by model size to fit for very large and very small models
-					osg::Vec3 deltaTrans((deltaPos*factor/1000.0f)); // leap tracking: mm, OSG units: m
+					// scale by model size to fit for very large and very small models
+					double factor = 2*sceneRadius_;
+					// scale translation units. leap tracking: mm, OSG units: m
+					osg::Vec3 deltaTrans((deltaPos*factor/1000.0f));
 					trans += rot*deltaTrans;
 					manipulator_->panModel(deltaTrans.x(), deltaTrans.y());
 				}
@@ -184,10 +193,9 @@ namespace osgLeap {
 					Leap::Vector lastPosNorm = lastPositionRightHand_/reference_length;
 					Leap::Vector curPosNorm = handRight.stabilizedPalmPosition()/reference_length;
 
-					manipulator_->setVerticalAxisFixed(true);
-
-					// rotate camera
-					if( manipulator_->getVerticalAxisFixed() ) {
+					// At the moment, Fixed VerticalAxis is the only mode supported
+					// because rotateTrackball is not yet working correctly.
+					if( true /*manipulator_->getVerticalAxisFixed()*/ ) {
 						OSG_DEBUG<<"FIXED VERTICAL"<<std::endl;
 						manipulator_->rotateWithFixedVertical( movement.x, movement.y );
 					} else {
@@ -248,8 +256,7 @@ namespace osgLeap {
 
 	bool LeapManipulator::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
 	{
-		sceneRadius_ = us.asView()->getCamera()->getBound().radius();
-		if (sceneRadius_ == 0.0f) { sceneRadius_ = 1.0f; }
+		listener_->setSceneRadius(us.asView()->getCamera()->getBound().radius());
 
 		return osgGA::OrbitManipulator::handle(ea, us);
 	}
