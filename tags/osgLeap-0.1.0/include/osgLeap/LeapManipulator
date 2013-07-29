@@ -1,0 +1,59 @@
+/*
+ * Library osgLeap
+ * Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+ *
+ * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+ * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
+#ifndef OSGLEAP_LEAP_MANIPULATOR
+#define OSGLEAP_LEAP_MANIPULATOR 1
+
+#include <osgLeap/Export>
+
+#include <osgGA/OrbitManipulator>
+
+namespace Leap {
+	class Controller;
+}
+
+namespace osgLeap {
+
+	class Listener;
+
+	class OSGLEAP_EXPORT LeapManipulator: public osgGA::OrbitManipulator
+	{
+		typedef osgGA::OrbitManipulator inherited;
+		public:
+			enum Action {
+				LM_None = 0,
+				LM_Pan = 1,
+				LM_Rotate = 2,
+				LM_Zoom = 4
+			};
+
+			LeapManipulator();
+			LeapManipulator(const LeapManipulator& lm,
+						const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
+			virtual ~LeapManipulator();
+
+			META_Object( osgLeap, LeapManipulator );
+
+			virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
+
+			double getSceneRadius() { return sceneRadius_; }
+
+		protected:
+			double sceneRadius_;
+
+			Leap::Controller* controller_;
+			osgLeap::Listener* listener_;
+
+			friend class osgLeap::Listener;
+	};
+
+} /* namespace osgLeap */
+
+#endif /* OSGLEAP_ORBIT_MANIPULATOR */
