@@ -80,6 +80,15 @@ namespace osgLeap {
 	{
 		typedef osgGA::OrbitManipulator inherited;
 		public:
+			enum Mode {
+				// TwoHanded is currently default.
+				// PAN: Single hand - hand opened (fingers spread a bit)
+				// ZOOM: Two hands - left hand closed (fist), right hand opened (fingers spread a bit)
+				// ROTATE: Two hands - both hands opened. To stop rotating fully close both hands.
+				TwoHanded = 1,
+				SingleHanded = 2
+			};
+
 			enum Action {
 				LM_None = 0,
 				LM_Pan = 1,
@@ -88,7 +97,7 @@ namespace osgLeap {
 			};
 
 			// Default constructor
-			LeapManipulator();
+			LeapManipulator(const Mode& mode = TwoHanded);
 
 			// Copy constructor
 			LeapManipulator(const LeapManipulator& lm,
@@ -98,6 +107,8 @@ namespace osgLeap {
 			virtual ~LeapManipulator();
 
 			META_Object( osgLeap, LeapManipulator );
+
+			void setMode(const Mode& mode) { mode_ = mode; }
 
 			// Called from within OpenSceneGraph EventTraversal
 			virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
@@ -118,6 +129,7 @@ namespace osgLeap {
 			double handsDistance_;
 
 			int currentAction_;
+			Mode mode_;
 	};
 
 } /* namespace osgLeap */
