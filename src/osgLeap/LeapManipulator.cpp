@@ -8,8 +8,10 @@
  *
  */
 
-//-- Project --//
 #include <osgLeap/LeapManipulator>
+
+//-- Project --//
+#include <osgLeap/Controller>
 
 //-- OSG: osg --//
 #include <osg/Referenced>
@@ -19,19 +21,6 @@
 #include <LeapMath.h>
 
 namespace osgLeap {
-
-	Controller* Controller::instance(bool erase)
-	{
-		static osg::ref_ptr<Controller> instance_ = new Controller;
-
-		OSG_DEBUG<<"Accessed: osgLeap::Controller="<<instance_<<std::endl;
-
-		if (erase) 
-		{   
-			instance_ = NULL;
-		}
-		return instance_.get(); // will return NULL on erase
-	}
 
 	LeapManipulator::LeapManipulator(const Mode& mode): osgGA::OrbitManipulator(), Leap::Listener(),
 		mode_(mode),
@@ -111,7 +100,7 @@ namespace osgLeap {
 					double reference_length = 100.0f;
 
 					if (mode_ == SingleHanded) {
-						if (frame.hands().count() == 1 && handRight.fingers().count() >= 3) {
+						if (frame.hands().count() > 0 && handRight.fingers().count() >= 3) {
 							if (!(currentAction_ & LM_Rotate )) {
 								lastPositionRightHand_ = handRight.stabilizedPalmPosition();
 							}
