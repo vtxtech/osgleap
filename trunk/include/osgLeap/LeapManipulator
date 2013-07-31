@@ -11,19 +11,72 @@
 #ifndef OSGLEAP_LEAPMANIPULATOR
 #define OSGLEAP_LEAPMANIPULATOR 1
 
+//-- Project --//
 #include <osgLeap/Export>
 
-#include <osgGA/OrbitManipulator>
+//-- Leap --//
+#include <Leap.h>
 
-namespace Leap {
-	class Controller;
-}
+//-- OSG: osgGA --//
+#include <osgGA/OrbitManipulator>
 
 namespace osgLeap {
 
-	class Listener;
+	// A reference counted version of Leap::Controller
+	// Instead of using one "new osg::LeapController()" per class utilizing
+	// the Leap Motion device, please consider using the singleton instance
+	// Controller* osgLeap::Controller::instance() instead
+	class Controller: public Leap::Controller, public osg::Referenced {
+	public:
+		Controller() {}
+		virtual ~Controller() {}
 
-	class OSGLEAP_EXPORT LeapManipulator: public osgGA::OrbitManipulator
+		void destruct();
+
+		static Controller* instance(bool erase = false);
+	private:
+		osg::ref_ptr<Controller> instance_;
+	};
+
+	// A reference counted version of Leap::Listener
+	class Listener: public Leap::Listener, public osg::Referenced {
+	public:
+		Listener() {}
+		virtual ~Listener() {}
+
+		virtual void onInit(const Leap::Controller&) {
+			OSG_DEBUG<<"Initialized"<<std::endl;
+		}
+
+		virtual void onConnect(const Leap::Controller&) {
+			OSG_DEBUG<<"Connected"<<std::endl;
+		}
+
+		virtual void onDisconnect(const Leap::Controller&) {
+			// Note: not dispatched when running in a debugger.
+			OSG_DEBUG<<"Disconnected"<<std::endl;
+		}
+
+		virtual void onExit(const Leap::Controller&) {
+			OSG_DEBUG<<"Exited"<<std::endl;
+		}
+
+		virtual void onFrame(const Leap::Controller&) {
+			OSG_DEBUG<<"Frame"<<std::endl;
+		}
+		
+		virtual void onFocusGained(const Leap::Controller&) {
+			OSG_DEBUG<<"Focus Gained"<<std::endl;
+		}
+
+		virtual void onFocusLost(const Leap::Controller&) {
+			OSG_DEBUG<<"Focus Lost"<<std::endl;
+		}
+
+	};
+
+	// A CameraManipulator for interacting with the Leap Motion device
+	class OSGLEAP_EXPORT LeapManipulator: public osgGA::OrbitManipulator, public Leap::Listener
 	{
 		typedef osgGA::OrbitManipulator inherited;
 		public:
@@ -34,24 +87,33 @@ namespace osgLeap {
 				LM_Zoom = 4
 			};
 
+			// Default constructor
 			LeapManipulator();
+
+			// Copy constructor
 			LeapManipulator(const LeapManipulator& lm,
 						const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
+
+			// Virtual destructor
 			virtual ~LeapManipulator();
 
 			META_Object( osgLeap, LeapManipulator );
 
 			virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
 
-			double getSceneRadius() { return sceneRadius_; }
+			virtual void onFrame(const Leap::Controller&);
 
 		protected:
+			int32_t leftHandID_;
+			int32_t rightHandID_;
+			Leap::Frame lastFrame_;
+			Leap::Vector lastPositionLeftHand_;
+			Leap::Vector lastPositionRightHand_;
+			double handsDistance_;
 			double sceneRadius_;
 
-			Leap::Controller* controller_;
-			osgLeap::Listener* listener_;
-
-			friend class osgLeap::Listener;
+			int currentAction_;
+			osg::Timer_t lastFrameStamp_;
 	};
 
 } /* namespace osgLeap */
