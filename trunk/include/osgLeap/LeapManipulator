@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef OSGLEAP_LEAPMANIPULATOR
-#define OSGLEAP_LEAPMANIPULATOR 1
+#ifndef OSGLEAP_LEAPMANIPULATOR_
+#define OSGLEAP_LEAPMANIPULATOR_ 1
 
 //-- Project --//
 #include <osgLeap/Export>
@@ -86,6 +86,8 @@ namespace osgLeap {
 				// ZOOM: Two hands - left hand closed (fist), right hand opened (fingers spread a bit)
 				// ROTATE: Two hands - both hands opened. To stop rotating fully close both hands.
 				TwoHanded = 1,
+				// SingleHanded is the most simple manipulator mode
+				// Use one hand for rotating and zooming. Panning is not supported.
 				SingleHanded = 2
 			};
 
@@ -134,4 +136,4 @@ namespace osgLeap {
 
 } /* namespace osgLeap */
 
-#endif /* OSGLEAP_ORBIT_MANIPULATOR */
+#endif /* OSGLEAP_LEAPMANIPULATOR_ */
