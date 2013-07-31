@@ -23,7 +23,8 @@ int main(int argc, char** argv)
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
 	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" is an example showing osgLeap::LeapManipulator use.");
     arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename ...");
-    arguments.getApplicationUsage()->addCommandLineOption("--image <filename>","Load an image and render it on a quad");
+    arguments.getApplicationUsage()->addCommandLineOption("--singlehanded", "Initialize the LeapManipulator in simple one-handed mode (rotate+zoom) without panning.");
+    arguments.getApplicationUsage()->addCommandLineOption("--twohanded", "Initialize the LeapManipulator in two-handed mode. PAN: One hand, ZOOM: Left hand closed+Right hand open, ROTATE: Both hands open. Move right hand for rotation.");
 
     osgViewer::Viewer viewer(arguments);
 
@@ -49,7 +50,15 @@ int main(int argc, char** argv)
 
 	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
 
-    viewer.setCameraManipulator( new osgLeap::LeapManipulator() );
+	osgLeap::LeapManipulator::Mode mode = osgLeap::LeapManipulator::TwoHanded;
+	while (arguments.read("--twohanded")) {
+		mode = osgLeap::LeapManipulator::TwoHanded;
+	}
+	while (arguments.read("--singlehanded")) {
+		mode = osgLeap::LeapManipulator::SingleHanded;
+	}
+
+    viewer.setCameraManipulator( new osgLeap::LeapManipulator(mode) );
 
 	// load the data
     osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);
