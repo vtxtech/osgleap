@@ -22,22 +22,6 @@
 
 namespace osgLeap {
 
-	// A reference counted version of Leap::Controller
-	// Instead of using one "new osg::LeapController()" per class utilizing
-	// the Leap Motion device, please consider using the singleton instance
-	// Controller* osgLeap::Controller::instance() instead
-	class Controller: public Leap::Controller, public osg::Referenced {
-	public:
-		Controller() {}
-		virtual ~Controller() {}
-
-		void destruct();
-
-		static Controller* instance(bool erase = false);
-	private:
-		osg::ref_ptr<Controller> instance_;
-	};
-
 	// A reference counted version of Leap::Listener
 	class Listener: public Leap::Listener, public osg::Referenced {
 	public:
