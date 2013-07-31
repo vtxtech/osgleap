@@ -99,21 +99,25 @@ namespace osgLeap {
 
 			META_Object( osgLeap, LeapManipulator );
 
+			// Called from within OpenSceneGraph EventTraversal
 			virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
 
+			// Called by Leap::Controller asynchronously
 			virtual void onFrame(const Leap::Controller&);
 
 		protected:
+			Leap::Frame frame_;
+			osg::Timer_t frameStamp_;
+			Leap::Frame lastFrame_;
+			osg::Timer_t lastFrameStamp_;
+
 			int32_t leftHandID_;
 			int32_t rightHandID_;
-			Leap::Frame lastFrame_;
 			Leap::Vector lastPositionLeftHand_;
 			Leap::Vector lastPositionRightHand_;
 			double handsDistance_;
-			double sceneRadius_;
 
 			int currentAction_;
-			osg::Timer_t lastFrameStamp_;
 	};
 
 } /* namespace osgLeap */
