@@ -22,43 +22,6 @@
 
 namespace osgLeap {
 
-	// A reference counted version of Leap::Listener
-	class Listener: public Leap::Listener, public osg::Referenced {
-	public:
-		Listener() {}
-		virtual ~Listener() {}
-
-		virtual void onInit(const Leap::Controller&) {
-			OSG_DEBUG<<"Initialized"<<std::endl;
-		}
-
-		virtual void onConnect(const Leap::Controller&) {
-			OSG_DEBUG<<"Connected"<<std::endl;
-		}
-
-		virtual void onDisconnect(const Leap::Controller&) {
-			// Note: not dispatched when running in a debugger.
-			OSG_DEBUG<<"Disconnected"<<std::endl;
-		}
-
-		virtual void onExit(const Leap::Controller&) {
-			OSG_DEBUG<<"Exited"<<std::endl;
-		}
-
-		virtual void onFrame(const Leap::Controller&) {
-			OSG_DEBUG<<"Frame"<<std::endl;
-		}
-		
-		virtual void onFocusGained(const Leap::Controller&) {
-			OSG_DEBUG<<"Focus Gained"<<std::endl;
-		}
-
-		virtual void onFocusLost(const Leap::Controller&) {
-			OSG_DEBUG<<"Focus Lost"<<std::endl;
-		}
-
-	};
-
 	// A CameraManipulator for interacting with the Leap Motion device
 	class OSGLEAP_EXPORT LeapManipulator: public osgGA::OrbitManipulator, public Leap::Listener
 	{
