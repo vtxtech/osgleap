@@ -8,4 +8,4 @@
   * More interaction metaphors, e.g. single hand use
 
 == osgLeap Future ==
-  * t.b.d.
+  * Classes for gesture recognition adding more gestures to detect which are not detected by the Leap SDK, yet.
