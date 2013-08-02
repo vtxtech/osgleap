@@ -30,8 +30,8 @@ namespace osgLeap {
 		lastFrameStamp_(0.0f),
 		leftHandID_(0),
 		rightHandID_(0),
-		lastPositionLeftHand_(Leap::Vector(0.0f, 0.0f, 0.0f)),
-		lastPositionRightHand_(Leap::Vector(0.0f, 0.0f, 0.0f)),
+		lastLeftHand_(Leap::Hand()),
+		lastRightHand_(Leap::Hand()),
 		handsDistance_(0.0f),
 		currentAction_(LM_None)
 	{
@@ -52,8 +52,8 @@ namespace osgLeap {
 		lastFrameStamp_(0.0f),
 		leftHandID_(0),
 		rightHandID_(0),
-		lastPositionLeftHand_(Leap::Vector(0.0f, 0.0f, 0.0f)),
-		lastPositionRightHand_(Leap::Vector(0.0f, 0.0f, 0.0f)),
+		lastLeftHand_(Leap::Hand()),
+		lastRightHand_(Leap::Hand()),
 		handsDistance_(0.0f),
 		currentAction_(LM_None)
 	{
@@ -102,18 +102,70 @@ namespace osgLeap {
 					if (mode_ == SingleHanded) {
 						if (frame.hands().count() > 0 && handRight.fingers().count() >= 3) {
 							if (!(currentAction_ & LM_Rotate )) {
-								lastPositionRightHand_ = handRight.stabilizedPalmPosition();
+								lastRightHand_ = handRight;
 							}
 							currentAction_ = LM_Rotate | LM_Zoom;
-							Leap::Vector movement = (handRight.stabilizedPalmPosition()-lastPositionRightHand_)/reference_length;
+							Leap::Vector movement = (handRight.stabilizedPalmPosition()-lastRightHand_.stabilizedPalmPosition())/reference_length;
 							OSG_DEBUG<<"FIXED VERTICAL"<<std::endl;
 							rotateWithFixedVertical( movement.x, movement.y );
 							zoomModel(-movement.z);
 						}
+					} else if (mode_ == Trackball) {
+						if (frame.hands().count() > 0 && handRight.fingers().count() >= 3) {
+							if (!(currentAction_ & LM_Rotate)) {
+								lastRightHand_ = handRight;
+							}
+							currentAction_ = LM_Rotate | LM_Zoom | LM_Pan;
+
+							if (currentAction_ & LM_Rotate) {
+								//Leap::FloatArray a(handRight.rotationMatrix(lastFrame_).toArray4x4());
+								//osg::Matrix mat_rot(a.m_array[0], a.m_array[1], a.m_array[2], a.m_array[3], a.m_array[4], a.m_array[5], a.m_array[6], a.m_array[7], a.m_array[8], 
+								//	a.m_array[9], a.m_array[10], a.m_array[11], a.m_array[12], a.m_array[13], a.m_array[14], a.m_array[15]);
+								//osg::Matrix rot(a.m_array[0], a.m_array[4], a.m_array[8], a.m_array[12], a.m_array[1], a.m_array[5], a.m_array[9], a.m_array[13], a.m_array[2], 
+								//	a.m_array[6], a.m_array[10], a.m_array[14], a.m_array[3], a.m_array[7], a.m_array[11], a.m_array[15]);
+								//setRotation(mat_rot.getRotate()*getRotation());
+
+								Leap::Vector lastRot(lastRightHand_.direction().yaw(), lastRightHand_.direction().pitch(), lastRightHand_.palmNormal().roll());
+								Leap::Vector curRot(handRight.direction().yaw(), handRight.direction().pitch(), handRight.palmNormal().roll());
+								Leap::Vector deltaRot = curRot - lastRot;
+								//if ((deltaRot.x != 0.0f) || (deltaRot.y != 0.0f) || (deltaRot.z != 0.0f)) { 
+								//	OSG_DEBUG<<"FIXED VERTICAL"<<std::endl;
+								//	rotateWithFixedVertical( -deltaRot.x, deltaRot.z );
+								//}
+
+								osg::Quat addRot(deltaRot.x, getRotation()*osg::Y_AXIS, -deltaRot.y, getRotation()*osg::X_AXIS, -deltaRot.z, getRotation()*osg::Z_AXIS);
+								setRotation(getRotation()*addRot); // does work only if no rotation is there..
+
+								//osg::Vec3 trans;
+								//osg::Quat rot;
+								//trans = getMatrix().getTrans();
+								//rot = getMatrix().getRotate();
+								//setByMatrix(/*osg::Matrix::rotate(addRot)**/osg::Matrix::rotate(rot)*osg::Matrix::translate(trans)*osg::Matrix::rotate(addRot));//flipping
+							}
+
+							if (currentAction_ & LM_Zoom) {
+								Leap::Vector movement = (handRight.stabilizedPalmPosition()-lastRightHand_.stabilizedPalmPosition())/reference_length;
+								zoomModel(-movement.z);
+							}
+
+							if (currentAction_ & LM_Pan) {
+								osg::Vec3 deltaPos = osg::Vec3(-(handRight.stabilizedPalmPosition().x-lastRightHand_.stabilizedPalmPosition().x), -(handRight.stabilizedPalmPosition().y-lastRightHand_.stabilizedPalmPosition().y), -(handRight.stabilizedPalmPosition().z-lastRightHand_.stabilizedPalmPosition().z));
+								if (deltaPos.x() != 0.0f || deltaPos.y() != 0.0f || deltaPos.z() != 0.0f) { 
+									// scale by model size to fit for very large and very small models
+									double factor = 2*us.asView()->getCamera()->getBound().radius();
+									// scale translation units. leap tracking: mm, OSG units: m
+									osg::Vec3 deltaTrans((deltaPos*factor/1000.0f));
+									panModel(deltaTrans.x(), deltaTrans.y());
+								}
+							}
+
+						} else {
+							currentAction_ = LM_None;
+						}
 					} else { //TwoHanded
 						if (frame.hands().count() == 1 && handRight.fingers().count() >= 3) {
 							if ((currentAction_ != LM_Pan)) {
-								lastPositionRightHand_ = handRight.stabilizedPalmPosition();
+								lastRightHand_ = handRight;
 							}
 							currentAction_ = LM_Pan;
 						} else if (frame.hands().count() > 1 && handLeft.fingers().count() >= 3 && handRight.fingers().count() >=3) {
@@ -145,7 +197,7 @@ namespace osgLeap {
 						trans = getMatrix().getTrans();
 
 						// Calculate delta position (movement)
-						osg::Vec3 deltaPos = osg::Vec3(-(handRight.stabilizedPalmPosition().x-lastPositionRightHand_.x), -(handRight.stabilizedPalmPosition().y-lastPositionRightHand_.y), -(handRight.stabilizedPalmPosition().z-lastPositionRightHand_.z));
+						osg::Vec3 deltaPos = osg::Vec3(-(handRight.stabilizedPalmPosition().x-lastRightHand_.stabilizedPalmPosition().x), -(handRight.stabilizedPalmPosition().y-lastRightHand_.stabilizedPalmPosition().y), -(handRight.stabilizedPalmPosition().z-lastRightHand_.stabilizedPalmPosition().z));
 						if (currentAction_ & LM_Pan) {
 							if (deltaPos.x() != 0.0f || deltaPos.y() != 0.0f || deltaPos.z() != 0.0f) { 
 								// scale by model size to fit for very large and very small models
@@ -166,7 +218,7 @@ namespace osgLeap {
 							}
 							if (currentAction_ & LM_Rotate) {
 			#if 0
-								Leap::Vector movement = osg::PI_2*(handRight.stabilizedPalmPosition()-lastPositionRightHand_)/reference_length;
+								Leap::Vector movement = osg::PI_2*(handRight.stabilizedPalmPosition()-lastRightHand_.stabilizedPalmPosition())/reference_length;
 								osg::Quat addRotX(-movement.x, osg::Y_AXIS);
 								osg::Quat addRotY(movement.y, osg::X_AXIS);
 								osg::Quat addRotZ;//(movement.z, osg::Z_AXIS);//movement very strange
@@ -175,11 +227,11 @@ namespace osgLeap {
 								// At the moment, Fixed VerticalAxis is the only mode supported
 								// because rotateTrackball is not yet working correctly.
 								if( true /*manipulator_->getVerticalAxisFixed()*/ ) {
-									Leap::Vector movement = (handRight.stabilizedPalmPosition()-lastPositionRightHand_)/reference_length;
+									Leap::Vector movement = (handRight.stabilizedPalmPosition()-lastRightHand_.stabilizedPalmPosition())/reference_length;
 									OSG_DEBUG<<"FIXED VERTICAL"<<std::endl;
 									rotateWithFixedVertical( movement.x, movement.y );
 								} else {
-									Leap::Vector lastPosNorm = lastPositionRightHand_/reference_length;
+									Leap::Vector lastPosNorm = lastRightHand_.stabilizedPalmPosition()/reference_length;
 									Leap::Vector curPosNorm = handRight.stabilizedPalmPosition()/reference_length;
 									OSG_DEBUG<<"FLOATING VERTICAL"<<std::endl;
 									rotateTrackball( lastPosNorm.x, lastPosNorm.y,
@@ -194,8 +246,8 @@ namespace osgLeap {
 					
 					}
 
-					lastPositionLeftHand_ = handLeft.stabilizedPalmPosition();
-					lastPositionRightHand_ = handRight.stabilizedPalmPosition();
+					lastLeftHand_ = handLeft;
+					lastRightHand_ = handRight;
 
 				} else {
 					currentAction_ = LM_None;

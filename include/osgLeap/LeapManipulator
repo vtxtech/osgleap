@@ -30,12 +30,33 @@ namespace osgLeap {
 			enum Mode {
 				// TwoHanded is currently default.
 				// PAN: Single hand - hand opened (fingers spread a bit)
-				// ZOOM: Two hands - left hand closed (fist), right hand opened (fingers spread a bit)
-				// ROTATE: Two hands - both hands opened. To stop rotating fully close both hands.
+				// ZOOM: Two hands - left hand closed (fist), right hand opened
+				//      (fingers spread a bit)
+				// ROTATE: Two hands - both hands opened (fingers spread a bit)
+				//         To stop rotating fully close both hands.
+				// This mode requires some more training than the others
+				// Grant yourself trying some minutes actually training to 
+				// pan, rotate and zoom to get comfortable with this mode.
 				TwoHanded = 1,
+
 				// SingleHanded is the most simple manipulator mode
-				// Use one hand for rotating and zooming. Panning is not supported.
-				SingleHanded = 2
+				// Use one hand (opened) for rotating and zooming. Panning is
+				// not supported.
+				// - Move hand towards screen to zoom out, opposite direction
+				//   zooms in
+				// - Move hand upwards or sidewards to rotate
+				SingleHanded = 2,
+
+				// Trackball SingleHanded mode
+				// Uses one hand for 6DOF control. Movement is activated when
+				// one opened hand is detected. Be sure to position your arm
+				// perpendicularly to the Leap Motion.
+				// Imagine you are holding a basketball in your hand with palm
+				// down. Open your hand widely.
+				// - Move hand left/right/top/down for panning
+				// - Move hand towards screen to zoom
+				// - Rotate your hand to rotate the object
+				Trackball = 3
 			};
 
 			enum Action {
@@ -73,8 +94,8 @@ namespace osgLeap {
 
 			int32_t leftHandID_;
 			int32_t rightHandID_;
-			Leap::Vector lastPositionLeftHand_;
-			Leap::Vector lastPositionRightHand_;
+			Leap::Hand lastLeftHand_;
+			Leap::Hand lastRightHand_;
 			double handsDistance_;
 
 			int currentAction_;

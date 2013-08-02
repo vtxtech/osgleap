@@ -23,8 +23,9 @@ int main(int argc, char** argv)
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
 	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" is an example showing osgLeap::LeapManipulator use.");
     arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename ...");
+    arguments.getApplicationUsage()->addCommandLineOption("--twohanded", "Initialize the LeapManipulator in two-handed mode. PAN: One hand, ZOOM: Left hand closed+Right hand open, ROTATE: Both hands open. Move right hand for rotation (default).");
     arguments.getApplicationUsage()->addCommandLineOption("--singlehanded", "Initialize the LeapManipulator in simple one-handed mode (rotate+zoom) without panning.");
-    arguments.getApplicationUsage()->addCommandLineOption("--twohanded", "Initialize the LeapManipulator in two-handed mode. PAN: One hand, ZOOM: Left hand closed+Right hand open, ROTATE: Both hands open. Move right hand for rotation.");
+    arguments.getApplicationUsage()->addCommandLineOption("--trackball", "Initialize the LeapManipulator in trackball one-handed mode. Imagine to hold a basketball in your hand palm down (pan+rotate+zoom).");
 
     osgViewer::Viewer viewer(arguments);
 
@@ -56,6 +57,9 @@ int main(int argc, char** argv)
 	}
 	while (arguments.read("--singlehanded")) {
 		mode = osgLeap::LeapManipulator::SingleHanded;
+	}
+	while (arguments.read("--trackball")) {
+		mode = osgLeap::LeapManipulator::Trackball;
 	}
 
     viewer.setCameraManipulator( new osgLeap::LeapManipulator(mode) );
