@@ -20,6 +20,7 @@ SET(TARGET_H
     ${HEADER_PATH}/Controller
     ${HEADER_PATH}/Export
 	${HEADER_PATH}/LeapManipulator
+	${HEADER_PATH}/Listener
 )
 
 SET(TARGET_SRC
