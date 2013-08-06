@@ -1,0 +1,26 @@
+/*
+ * Library osgLeap
+ * Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+ *
+ * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+ * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
+#ifndef OSGLEAP_EXPORT_
+#define OSGLEAP_EXPORT_ 1
+
+#if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || defined( __BCPLUSPLUS__)  || defined( __MWERKS__)
+    #  if defined( OSGLEAP_LIBRARY_STATIC )
+    #    define OSGLEAP_EXPORT
+    #  elif defined( OSGLEAP_LIBRARY )
+    #    define OSGLEAP_EXPORT   __declspec(dllexport)
+    #  else
+    #    define OSGLEAP_EXPORT   __declspec(dllimport)
+    #  endif
+#else
+    #  define OSGLEAP_EXPORT
+#endif
+
+#endif
