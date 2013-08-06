@@ -1,11 +1,8 @@
 #summary ToDo-Page for osgLeap
 = List of open issues =
 
-== osgLeap 0.1.2 ==
-  * Stabilization of interaction metaphors
-
 == osgLeap 0.3.0 ==
-  * Build support for GCC
+  * Stabilization of singlehanded interaction metaphors
 
 == osgLeap Future ==
   * Classes for gesture recognition adding more gestures to detect which are not detected by the Leap SDK, yet.
