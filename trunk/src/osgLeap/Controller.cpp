@@ -13,6 +13,15 @@
 //-- OSG: osg --//
 #include <osg/Notify>
 
+#ifdef LEAPSDK_080_COMPATIBILITYMODE
+// Fix for missing implementation of virtual destructor
+namespace Leap {
+	Controller::~Controller() {
+
+	}
+}
+#endif
+
 namespace osgLeap {
 
 	Controller* Controller::instance(bool erase)

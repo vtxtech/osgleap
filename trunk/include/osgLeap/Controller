@@ -27,7 +27,7 @@ namespace osgLeap {
 	// Instead of using one "new osg::LeapController()" per class utilizing
 	// the Leap Motion device, please consider using the singleton instance
 	// Controller* osgLeap::Controller::instance() instead
-	class Controller: public Leap::Controller, public osg::Referenced {
+	class OSGLEAP_EXPORT Controller: public Leap::Controller, public osg::Referenced {
 	public:
 		Controller() {}
 		virtual ~Controller() {}
