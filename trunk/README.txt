@@ -4,6 +4,21 @@
 # -----------------------------------------------------------------------------
 #
 # -----------------------------------------------------------------------------
+# Change Notes osgLeap v.0.1.2
+# ------------------------------
+#
+# * Build support for g++ on Linux (tested on g++ 4.6 on Xubuntu 12.04)
+# * Introduced "singlehanded" and "trackball" single handed manipulator modes
+# * Introduced compatiblity mode for LeapSDK 0.8.0 (in CMake options please
+#     enable LEAPSDK_080_COMPATIBILITYMODE)
+#
+# -----------------------------------------------------------------------------
+# Change Notes osgLeap v.0.1.1
+# ------------------------------
+#
+# * Code cleanup and build support for MSVC++ 2008, 2010 and 2012
+#
+# -----------------------------------------------------------------------------
 # Change Notes osgLeap v.0.1.0
 # ------------------------------
 #
