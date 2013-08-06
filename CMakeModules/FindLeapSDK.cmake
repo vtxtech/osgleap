@@ -28,6 +28,7 @@ FIND_LIBRARY(LEAP_LIBRARY
     $ENV{LEAPSDK_DIR}/lib
     $ENV{LEAPSDK_DIR}
 	${CMAKE_INSTALL_PREFIX}/lib
+    /usr/lib/Leap # default leap sdk install dir
     ~/Library/Frameworks
     /Library/Frameworks
     /usr/local/lib
