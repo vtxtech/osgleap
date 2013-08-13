@@ -1,8 +1,7 @@
 #summary ToDo-Page for osgLeap
-= List of open issues =
-
-== osgLeap 0.3.0 ==
+= List of open tasks =
   * Stabilization of singlehanded interaction metaphors
-
-== osgLeap Future ==
+  * Finger pointing
+  * First person fly navigation
+  * First person walk navigation
   * Classes for gesture recognition adding more gestures to detect which are not detected by the Leap SDK, yet.
