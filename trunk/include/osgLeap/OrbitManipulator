@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef OSGLEAP_LEAPMANIPULATOR_
-#define OSGLEAP_LEAPMANIPULATOR_ 1
+#ifndef OSGLEAP_ORBITMANIPULATOR_
+#define OSGLEAP_ORBITMANIPULATOR_ 1
 
 //-- Project --//
 #include <osgLeap/Export>
@@ -23,7 +23,7 @@
 namespace osgLeap {
 
 	// A CameraManipulator for interacting with the Leap Motion device
-	class OSGLEAP_EXPORT LeapManipulator: public osgGA::OrbitManipulator, public Leap::Listener
+	class OSGLEAP_EXPORT OrbitManipulator: public osgGA::OrbitManipulator, public Leap::Listener
 	{
 		typedef osgGA::OrbitManipulator inherited;
 		public:
@@ -67,16 +67,16 @@ namespace osgLeap {
 			};
 
 			// Default constructor
-			LeapManipulator(const Mode& mode = TwoHanded);
+			OrbitManipulator(const Mode& mode = TwoHanded);
 
 			// Copy constructor
-			LeapManipulator(const LeapManipulator& lm,
+			OrbitManipulator(const OrbitManipulator& lm,
 						const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
 
 			// Virtual destructor
-			virtual ~LeapManipulator();
+			virtual ~OrbitManipulator();
 
-			META_Object( osgLeap, LeapManipulator );
+			META_Object( osgLeap, OrbitManipulator );
 
 			void setMode(const Mode& mode) { mode_ = mode; }
 
@@ -104,4 +104,4 @@ namespace osgLeap {
 
 } /* namespace osgLeap */
 
-#endif /* OSGLEAP_LEAPMANIPULATOR_ */
+#endif /* OSGLEAP_ORBITMANIPULATOR_ */

@@ -19,13 +19,13 @@ INCLUDE_DIRECTORIES(${OSG_INCLUDE_DIR})
 SET(TARGET_H
     ${HEADER_PATH}/Controller
     ${HEADER_PATH}/Export
-	${HEADER_PATH}/LeapManipulator
+	${HEADER_PATH}/OrbitManipulator
 	${HEADER_PATH}/Listener
 )
 
 SET(TARGET_SRC
 	Controller.cpp
-    LeapManipulator.cpp
+    OrbitManipulator.cpp
 )
 
 SET(TARGET_LIBRARIES_VARS

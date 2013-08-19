@@ -8,7 +8,7 @@
  *
  */
 
-#include <osgLeap/LeapManipulator>
+#include <osgLeap/OrbitManipulator>
 
 //-- Project --//
 #include <osgLeap/Controller>
@@ -32,7 +32,7 @@ namespace osgLeap {
 #endif
 	}
 
-	LeapManipulator::LeapManipulator(const Mode& mode): osgGA::OrbitManipulator(), Leap::Listener(),
+	OrbitManipulator::OrbitManipulator(const Mode& mode): osgGA::OrbitManipulator(), Leap::Listener(),
 		mode_(mode),
 		frame_(Leap::Frame()),
 		frameStamp_(0.0f),
@@ -48,13 +48,13 @@ namespace osgLeap {
 		osgLeap::Controller::instance()->addListener(*this);
 	}
 
-	LeapManipulator::~LeapManipulator()
+	OrbitManipulator::~OrbitManipulator()
 	{
 		osgLeap::Controller::instance()->removeListener(*this);
 	}
 
-	LeapManipulator::LeapManipulator(const LeapManipulator& lm,
-		const osg::CopyOp& copyOp): OrbitManipulator(lm, copyOp), Leap::Listener(*this),
+	OrbitManipulator::OrbitManipulator(const OrbitManipulator& lm,
+		const osg::CopyOp& copyOp): osgGA::OrbitManipulator(lm, copyOp), Leap::Listener(*this),
 		mode_(lm.mode_),
 		frame_(Leap::Frame()),
 		frameStamp_(0.0f),
@@ -70,7 +70,7 @@ namespace osgLeap {
 
 	}
 
-	bool LeapManipulator::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
+	bool OrbitManipulator::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
 	{
 		if (ea.getEventType() == osgGA::GUIEventAdapter::FRAME) {
 			// Copy frame and framestamp to avoid issues from ansynchronous update
@@ -227,13 +227,13 @@ namespace osgLeap {
 								zoomModel(factor);
 							}
 							if (currentAction_ & LM_Rotate) {
-			#if 0
+#if 0
 								Leap::Vector movement = osg::PI_2*(handRight.stabilizedPalmPosition()-lastRightHand_.stabilizedPalmPosition())/reference_length;
 								osg::Quat addRotX(-movement.x, osg::Y_AXIS);
 								osg::Quat addRotY(movement.y, osg::X_AXIS);
 								osg::Quat addRotZ;//(movement.z, osg::Z_AXIS);//movement very strange
 								manipulator_->setRotation(addRotX*addRotY*addRotZ*rot);
-			#else
+#else
 								// At the moment, Fixed VerticalAxis is the only mode supported
 								// because rotateTrackball is not yet working correctly.
 								if( true /*manipulator_->getVerticalAxisFixed()*/ ) {
@@ -248,7 +248,7 @@ namespace osgLeap {
 												curPosNorm.x, curPosNorm.y,
 												getThrowScale( deltaTimeSinceLastFrame ) );
 								}
-			#endif
+#endif
 							}
 						}
 
@@ -271,7 +271,7 @@ namespace osgLeap {
 		return osgGA::OrbitManipulator::handle(ea, us);
 	}
 
-	void LeapManipulator::onFrame(const Leap::Controller& controller) {
+	void OrbitManipulator::onFrame(const Leap::Controller& controller) {
 		// Get the most recent frame and store it to later use in handle(...)
 		frame_ = controller.frame();
 		frameStamp_ = osg::Timer::instance()->tick();
