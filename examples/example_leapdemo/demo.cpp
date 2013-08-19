@@ -13,7 +13,7 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
-#include <osgLeap/LeapManipulator>
+#include <osgLeap/OrbitManipulator>
 
 int main(int argc, char** argv)
 {
@@ -21,11 +21,11 @@ int main(int argc, char** argv)
     osg::ArgumentParser arguments(&argc,argv);
 
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
-	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" is an example showing osgLeap::LeapManipulator use.");
+	arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" is an example showing osgLeap::OrbitManipulator use.");
     arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename ...");
-    arguments.getApplicationUsage()->addCommandLineOption("--twohanded", "Initialize the LeapManipulator in two-handed mode. PAN: One hand, ZOOM: Left hand closed+Right hand open, ROTATE: Both hands open. Move right hand for rotation (default).");
-    arguments.getApplicationUsage()->addCommandLineOption("--singlehanded", "Initialize the LeapManipulator in simple one-handed mode (rotate+zoom) without panning.");
-    arguments.getApplicationUsage()->addCommandLineOption("--trackball", "Initialize the LeapManipulator in trackball one-handed mode. Imagine to hold a basketball in your hand palm down (pan+rotate+zoom).");
+    arguments.getApplicationUsage()->addCommandLineOption("--twohanded", "Initialize the OrbitManipulator in two-handed mode. PAN: One hand, ZOOM: Left hand closed+Right hand open, ROTATE: Both hands open. Move right hand for rotation (default).");
+    arguments.getApplicationUsage()->addCommandLineOption("--singlehanded", "Initialize the OrbitManipulator in simple one-handed mode (rotate+zoom) without panning.");
+    arguments.getApplicationUsage()->addCommandLineOption("--trackball", "Initialize the OrbitManipulator in trackball one-handed mode. Imagine to hold a basketball in your hand palm down (pan+rotate+zoom).");
 
     osgViewer::Viewer viewer(arguments);
 
@@ -51,18 +51,18 @@ int main(int argc, char** argv)
 
 	viewer.addEventHandler(new osgViewer::WindowSizeHandler);
 
-	osgLeap::LeapManipulator::Mode mode = osgLeap::LeapManipulator::TwoHanded;
+	osgLeap::OrbitManipulator::Mode mode = osgLeap::OrbitManipulator::TwoHanded;
 	while (arguments.read("--twohanded")) {
-		mode = osgLeap::LeapManipulator::TwoHanded;
+		mode = osgLeap::OrbitManipulator::TwoHanded;
 	}
 	while (arguments.read("--singlehanded")) {
-		mode = osgLeap::LeapManipulator::SingleHanded;
+		mode = osgLeap::OrbitManipulator::SingleHanded;
 	}
 	while (arguments.read("--trackball")) {
-		mode = osgLeap::LeapManipulator::Trackball;
+		mode = osgLeap::OrbitManipulator::Trackball;
 	}
 
-    viewer.setCameraManipulator( new osgLeap::LeapManipulator(mode) );
+    viewer.setCameraManipulator( new osgLeap::OrbitManipulator(mode) );
 
 	// load the data
     osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);

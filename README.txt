@@ -1,7 +1,14 @@
 # -----------------------------------------------------------------------------
-# osgLeap is released under the GNU LESSER GENERAL PUBLIC LICENSE v 3.0.
+# osgLeap is released under the GNU LESSER GENERAL PUBLIC LICENSE v3.0.
 # Created by Johannes Scholz (vtxtech)
 # -----------------------------------------------------------------------------
+#
+# -----------------------------------------------------------------------------
+# Change Notes osgLeap v.0.1.3
+# ------------------------------
+#
+# * Renamed osgLeap::LeapManipulator to osgLeap::OrbitManipulator. This is done
+#     in order to avoid naming issues with future additional manipulators.
 #
 # -----------------------------------------------------------------------------
 # Change Notes osgLeap v.0.1.2
