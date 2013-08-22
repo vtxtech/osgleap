@@ -1,5 +1,5 @@
 /*
- * Example leapdemo
+ * Example leaporbit
  * Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
  *
  * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
