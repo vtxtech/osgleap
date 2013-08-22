@@ -27,6 +27,8 @@
 
 namespace osgLeap {
 
+	// A class that represents a single pointer which is calculated from a
+	// finger or tool pointing at the screen
 	class OSGLEAP_EXPORT Pointer: public osg::Referenced {
 	public:
 		Pointer(const osg::Vec2& position, int pointableID): position_(position), pointableID_(pointableID) {

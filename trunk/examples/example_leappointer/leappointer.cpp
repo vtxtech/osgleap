@@ -99,6 +99,17 @@ public:
 		
 	}
 
+	osg::ref_ptr<osg::Node> createPointerGeode() {
+		osg::ref_ptr<osg::Geode> sphere = new osg::Geode();
+		float radius = 10.0f;
+		osg::TessellationHints* hints = new osg::TessellationHints();
+		hints->setDetailRatio(0.5f);
+		osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3(0.0f,0.0f,0.0f),radius),hints);
+		sd->setColor(getColor());
+		sphere->addDrawable(sd);
+		return sphere;
+	}
+
 	osg::Vec4 getColor() {
 		osg::Vec4 result;
 
@@ -187,14 +198,7 @@ public:
 					// Add new pointer
 					pat = new osg::PositionAttitudeTransform();
 					pat->setUserValue<int>("PointableID", itr->first);
-					osg::ref_ptr<osg::Geode> sphere = new osg::Geode();
-					float radius = 10.0f;
-					osg::TessellationHints* hints = new osg::TessellationHints();
-					hints->setDetailRatio(0.5f);
-					osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3(0.0f,0.0f,0.0f),radius),hints);
-					sd->setColor(getColor());
-					sphere->addDrawable(sd);
-					pat->addChild(sphere);
+					pat->addChild(createPointerGeode());
 					// Add to scene graph
 					group->addChild(pat);
 					// Add to local reference map
