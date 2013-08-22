@@ -19,12 +19,14 @@ INCLUDE_DIRECTORIES(${OSG_INCLUDE_DIR})
 SET(TARGET_H
     ${HEADER_PATH}/Controller
     ${HEADER_PATH}/Export
-	${HEADER_PATH}/OrbitManipulator
+	${HEADER_PATH}/IntersectionController
 	${HEADER_PATH}/Listener
+	${HEADER_PATH}/OrbitManipulator
 )
 
 SET(TARGET_SRC
 	Controller.cpp
+	IntersectionController.cpp
     OrbitManipulator.cpp
 )
 

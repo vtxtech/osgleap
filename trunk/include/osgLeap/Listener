@@ -17,10 +17,14 @@
 //-- Leap --//
 #include <Leap.h>
 
+//-- OSG --//
+#include <osg/Notify>
+#include <osg/Object>
+
 namespace osgLeap {
 
 	// A reference counted version of Leap::Listener
-	class Listener: public Leap::Listener, public osg::Referenced {
+	class Listener: public Leap::Listener, public osg::Object {
 	public:
 		Listener() {}
 		virtual ~Listener() {}
