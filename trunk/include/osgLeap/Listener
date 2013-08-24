@@ -26,7 +26,11 @@ namespace osgLeap {
 	// A reference counted version of Leap::Listener
 	class Listener: public Leap::Listener, public osg::Object {
 	public:
+		META_Object(osgLeap, Listener);
+
 		Listener() {}
+		Listener(const Listener& hs,
+						const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY) {}
 		virtual ~Listener() {}
 
 		virtual void onInit(const Leap::Controller&) {
