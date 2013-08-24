@@ -57,6 +57,30 @@ osg::Camera* createHUD()
     return camera;
 }
 
+class ResizeUpdateCallback: public osg::NodeCallback
+{
+public:
+	ResizeUpdateCallback(osg::Camera* camera): camera_(camera)
+	{
+		
+	}
+
+    virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+    {
+		// ToDo: Handle camera resize in a better way
+		float screenheight = camera_->getGraphicsContext()->getTraits()->height;
+		float screenwidth  = camera_->getGraphicsContext()->getTraits()->width;
+
+		camera_->setProjectionMatrix(osg::Matrix::ortho2D(0.0f, screenwidth, 0.0f, screenheight));
+
+        traverse(node, nv);
+    }
+
+private:
+	osg::ref_ptr<osg::Camera> camera_;
+};
+
+
 int main(int argc, char** argv)
 {
     // use an ArgumentParser object to manage the program arguments.
@@ -129,6 +153,8 @@ int main(int argc, char** argv)
     viewer.realize();
 
 	osg::Camera* hudCamera = createHUD();
+	hudCamera->addUpdateCallback(new ResizeUpdateCallback(hudCamera));
+
 	// set up cameras to render on the first window available.
     osgViewer::Viewer::Windows windows;
     viewer.getWindows(windows);
