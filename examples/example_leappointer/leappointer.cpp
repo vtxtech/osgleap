@@ -20,6 +20,7 @@
 #include <osgViewer/ViewerEventHandlers>
 
 #include <osgLeap/IntersectionController>
+#include <osgLeap/HandState>
 
 osg::Camera* createHUD()
 {
@@ -82,6 +83,8 @@ osg::Camera* createHUD()
 
 
         camera->addChild(geode);
+
+		camera->addChild(new osgLeap::HandState());
     }
 
     return camera;

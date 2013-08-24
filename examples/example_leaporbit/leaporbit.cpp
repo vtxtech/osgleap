@@ -14,6 +14,48 @@
 #include <osgViewer/ViewerEventHandlers>
 
 #include <osgLeap/OrbitManipulator>
+#include <osgLeap/HandState>
+
+
+#include <osg/io_utils>
+#include <osg/Material>
+#include <osg/PositionAttitudeTransform>
+#include <osg/ShapeDrawable>
+#include <osg/ValueObject>
+#include <osgDB/ReadFile>
+#include <osgText/Text>
+#include <osgUtil/Optimizer>
+#include <osgViewer/Viewer>
+#include <osgViewer/ViewerEventHandlers>
+
+#include <osgLeap/IntersectionController>
+#include <osgLeap/HandState>
+
+osg::Camera* createHUD()
+{
+    // create a camera to set up the projection and model view matrices, and the subgraph to draw in the HUD
+    osg::Camera* camera = new osg::Camera;
+
+    // set the projection matrix
+    camera->setProjectionMatrix(osg::Matrix::ortho2D(0,1280,0,1024));
+
+    // set the view matrix
+    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+    camera->setViewMatrix(osg::Matrix::identity());
+
+    // only clear the depth buffer
+    camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+
+    // draw subgraph after main camera view.
+    camera->setRenderOrder(osg::Camera::POST_RENDER);
+
+    // we don't want the camera to grab event focus from the viewers main camera(s).
+    camera->setAllowEventFocus(false);
+
+	camera->addChild(new osgLeap::HandState());
+
+    return camera;
+}
 
 int main(int argc, char** argv)
 {
@@ -85,6 +127,18 @@ int main(int argc, char** argv)
     viewer.setSceneData( loadedModel.get() );
 
     viewer.realize();
+
+	osg::Camera* hudCamera = createHUD();
+	// set up cameras to render on the first window available.
+    osgViewer::Viewer::Windows windows;
+    viewer.getWindows(windows);
+
+    if (windows.empty()) return 1;
+
+    hudCamera->setGraphicsContext(windows[0]);
+    hudCamera->setViewport(0, 0, windows[0]->getTraits()->width, windows[0]->getTraits()->height);
+
+    viewer.addSlave(hudCamera, false);
 
     return viewer.run();
 
