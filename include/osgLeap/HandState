@@ -61,7 +61,7 @@ namespace osgLeap {
 			Leap::Frame frame_;
 			osg::ref_ptr<osg::Texture2D> lhTex_;
 			osg::ref_ptr<osg::Texture2D> rhTex_;
-			ImageVector texRightHand_;
+			ImageVector handsTextures_;
 
 			void createHandQuad(WhichHand hand);
 	};
