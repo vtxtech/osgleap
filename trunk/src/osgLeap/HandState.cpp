@@ -67,7 +67,7 @@ namespace osgLeap {
 
 			lhTex_ = new osg::Texture2D();
 			lhTex_->setDataVariance(osg::Object::DYNAMIC);
-			lhTex_->setImage(texRightHand_.at(0));
+			lhTex_->setImage(handsTextures_.at(0));
 			geom->getOrCreateStateSet()->setTextureAttributeAndModes(0, lhTex_, osg::StateAttribute::ON);
 			geom->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
 
@@ -106,7 +106,7 @@ namespace osgLeap {
 
 			rhTex_ = new osg::Texture2D();
 			rhTex_->setDataVariance(osg::Object::DYNAMIC);
-			rhTex_->setImage(texRightHand_.at(0));
+			rhTex_->setImage(handsTextures_.at(0));
 			geom->getOrCreateStateSet()->setTextureAttributeAndModes(0, rhTex_, osg::StateAttribute::ON);
 			geom->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
 
@@ -121,21 +121,21 @@ namespace osgLeap {
 		addUpdateCallback(new UpdateCallback());
 
 		osgLeap::Controller::instance()->addListener(*this);
-		texRightHand_.push_back(osgDB::readImageFile("norighthand.png"));
-		texRightHand_.push_back(osgDB::readImageFile("righthand0s.png"));
-		texRightHand_.push_back(osgDB::readImageFile("righthand1s.png"));
-		texRightHand_.push_back(osgDB::readImageFile("righthand2s.png"));
-		texRightHand_.push_back(osgDB::readImageFile("righthand3s.png"));
-		texRightHand_.push_back(osgDB::readImageFile("righthand4s.png"));
-		texRightHand_.push_back(osgDB::readImageFile("righthand5s.png"));
+		handsTextures_.push_back(osgDB::readImageFile("nohand.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand0s.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand1s.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand2s.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand3s.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand4s.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand5s.png"));
 
-		texRightHand_.at(0)->scaleImage(1024, 1024, 1);
-		texRightHand_.at(1)->scaleImage(1024, 1024, 1);
-		texRightHand_.at(2)->scaleImage(1024, 1024, 1);
-		texRightHand_.at(3)->scaleImage(1024, 1024, 1);
-		texRightHand_.at(4)->scaleImage(1024, 1024, 1);
-		texRightHand_.at(5)->scaleImage(1024, 1024, 1);
-		texRightHand_.at(6)->scaleImage(1024, 1024, 1);
+		handsTextures_.at(0)->scaleImage(1024, 1024, 1);
+		handsTextures_.at(1)->scaleImage(1024, 1024, 1);
+		handsTextures_.at(2)->scaleImage(1024, 1024, 1);
+		handsTextures_.at(3)->scaleImage(1024, 1024, 1);
+		handsTextures_.at(4)->scaleImage(1024, 1024, 1);
+		handsTextures_.at(5)->scaleImage(1024, 1024, 1);
+		handsTextures_.at(6)->scaleImage(1024, 1024, 1);
 
 		createHandQuad(LEFT_HAND);
 		createHandQuad(RIGHT_HAND);
@@ -163,17 +163,17 @@ namespace osgLeap {
 	{
 		Leap::Frame frame = frame_;
 
-		osg::Image* lh = texRightHand_.at(0);
-		osg::Image* rh = texRightHand_.at(0);
+		osg::Image* lh = handsTextures_.at(0);
+		osg::Image* rh = handsTextures_.at(0);
 
 		if (frame.hands().count() > 0) {
 			Leap::Hand left = frame.hands().leftmost();
 			Leap::Hand right = frame.hands().rightmost();
 			if (left.id() == right.id()) {
-				rh = texRightHand_.at(right.fingers().count()+1);
+				rh = handsTextures_.at(right.fingers().count()+1);
 			} else {
-				rh = texRightHand_.at(right.fingers().count()+1);
-				lh = texRightHand_.at(left.fingers().count()+1);
+				rh = handsTextures_.at(right.fingers().count()+1);
+				lh = handsTextures_.at(left.fingers().count()+1);
 			}
 		}
 
