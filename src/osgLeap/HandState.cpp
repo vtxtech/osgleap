@@ -33,101 +33,68 @@ namespace osgLeap {
 
 	void HandState::createHandQuad(WhichHand hand)
 	{
+		osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
+		osg::ref_ptr<osg::Vec3Array> va = new osg::Vec3Array();
+		geom->setVertexArray(va);
+		osg::ref_ptr<osg::Vec3Array> na = new osg::Vec3Array();
+		na->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
+		geom->setNormalArray(na);
+		geom->setNormalBinding(osg::Geometry::BIND_PER_PRIMITIVE_SET);
+		osg::Vec4Array* colors = new osg::Vec4Array();
+		colors->push_back(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+		geom->setColorArray(colors);
+		geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+		geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
+
+		osg::ref_ptr<osg::Vec2Array> texCoords = new osg::Vec2Array();
+
 		if (hand == LEFT_HAND) {
-			osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
-			osg::ref_ptr<osg::Vec3Array> va = new osg::Vec3Array();
 			va->push_back(osg::Vec3(0.0f, 0.0f, 0.0f));
 			va->push_back(osg::Vec3(128.0f, 0.0f, 0.0f));
 			va->push_back(osg::Vec3(128.0f, 160.0f, 0.0f));
 			va->push_back(osg::Vec3(0.0f, 160.0f, 0.0f));
-			geom->setVertexArray(va);
-			osg::ref_ptr<osg::Vec3Array> na = new osg::Vec3Array();
-			na->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
-			geom->setNormalArray(na);
-			geom->setNormalBinding(osg::Geometry::BIND_PER_PRIMITIVE_SET);
-			osg::Vec4Array* colors = new osg::Vec4Array();
-			colors->push_back(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
-			geom->setColorArray(colors);
-			geom->setColorBinding(osg::Geometry::BIND_OVERALL);
-			geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
-			osg::Vec2 myTexCoords[] =
-			{
-				osg::Vec2(1,0),
-				osg::Vec2(0,0),
-				osg::Vec2(0,1),
-				osg::Vec2(1,1)
-			};
+			texCoords->push_back(osg::Vec2(1,0));
+			texCoords->push_back(osg::Vec2(0,0));
+			texCoords->push_back(osg::Vec2(0,1));
+			texCoords->push_back(osg::Vec2(1,1));
 
-			int numTexCoords = sizeof(myTexCoords)/sizeof(osg::Vec2);
-
-			// pass the created tex coord array to the points geometry object,
-			// and use it to set texture unit 0.
-			geom->setTexCoordArray(0,new osg::Vec2Array(numTexCoords,myTexCoords));
-
-			lhTex_ = new osg::Texture2D();
-			lhTex_->setDataVariance(osg::Object::DYNAMIC);
-			lhTex_->setImage(handsTextures_.at(0));
 			geom->getOrCreateStateSet()->setTextureAttributeAndModes(0, lhTex_, osg::StateAttribute::ON);
-			geom->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
-
-			addDrawable(geom);
 		} else {
-			osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
-			osg::ref_ptr<osg::Vec3Array> va = new osg::Vec3Array();
 			va->push_back(osg::Vec3(128.0f, 0.0f, 0.0f));
 			va->push_back(osg::Vec3(256.0f, 0.0f, 0.0f));
 			va->push_back(osg::Vec3(256.0f, 160.0f, 0.0f));
 			va->push_back(osg::Vec3(128.0f, 160.0f, 0.0f));
-			geom->setVertexArray(va);
-			osg::ref_ptr<osg::Vec3Array> na = new osg::Vec3Array();
-			na->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
-			geom->setNormalArray(na);
-			geom->setNormalBinding(osg::Geometry::BIND_PER_PRIMITIVE_SET);
-			osg::Vec4Array* colors = new osg::Vec4Array();
-			colors->push_back(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
-			geom->setColorArray(colors);
-			geom->setColorBinding(osg::Geometry::BIND_OVERALL);
-			geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
-			osg::Vec2 myTexCoords[] =
-			{
-				osg::Vec2(0,0),
-				osg::Vec2(1,0),
-				osg::Vec2(1,1),
-				osg::Vec2(0,1)
-			};
+			texCoords->push_back(osg::Vec2(0,0));
+			texCoords->push_back(osg::Vec2(1,0));
+			texCoords->push_back(osg::Vec2(1,1));
+			texCoords->push_back(osg::Vec2(0,1));
 
-			int numTexCoords = sizeof(myTexCoords)/sizeof(osg::Vec2);
-
-			// pass the created tex coord array to the points geometry object,
-			// and use it to set texture unit 0.
-			geom->setTexCoordArray(0,new osg::Vec2Array(numTexCoords, myTexCoords));
-
-			rhTex_ = new osg::Texture2D();
-			rhTex_->setDataVariance(osg::Object::DYNAMIC);
-			rhTex_->setImage(handsTextures_.at(0));
 			geom->getOrCreateStateSet()->setTextureAttributeAndModes(0, rhTex_, osg::StateAttribute::ON);
-			geom->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
-
-			addDrawable(geom);
 		}
+
+		geom->setTexCoordArray(0, texCoords);
+		geom->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
+		addDrawable(geom);
 
 	}
 
 	HandState::HandState(): osg::Geode(), Leap::Listener(),
-		frame_(Leap::Frame())
+		frame_(Leap::Frame()),
+		lhTex_(new osg::Texture2D()),
+		rhTex_(new osg::Texture2D())
 	{
 		addUpdateCallback(new UpdateCallback());
 
 		osgLeap::Controller::instance()->addListener(*this);
 		handsTextures_.push_back(osgDB::readImageFile("nohand.png"));
-		handsTextures_.push_back(osgDB::readImageFile("hand0s.png"));
-		handsTextures_.push_back(osgDB::readImageFile("hand1s.png"));
-		handsTextures_.push_back(osgDB::readImageFile("hand2s.png"));
-		handsTextures_.push_back(osgDB::readImageFile("hand3s.png"));
-		handsTextures_.push_back(osgDB::readImageFile("hand4s.png"));
-		handsTextures_.push_back(osgDB::readImageFile("hand5s.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand0.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand1.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand2.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand3.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand4.png"));
+		handsTextures_.push_back(osgDB::readImageFile("hand5.png"));
 
 		handsTextures_.at(0)->scaleImage(1024, 1024, 1);
 		handsTextures_.at(1)->scaleImage(1024, 1024, 1);
@@ -136,6 +103,11 @@ namespace osgLeap {
 		handsTextures_.at(4)->scaleImage(1024, 1024, 1);
 		handsTextures_.at(5)->scaleImage(1024, 1024, 1);
 		handsTextures_.at(6)->scaleImage(1024, 1024, 1);
+
+		lhTex_->setDataVariance(osg::Object::DYNAMIC);
+		lhTex_->setImage(handsTextures_.at(0));
+		rhTex_->setDataVariance(osg::Object::DYNAMIC);
+		rhTex_->setImage(handsTextures_.at(0));
 
 		createHandQuad(LEFT_HAND);
 		createHandQuad(RIGHT_HAND);
