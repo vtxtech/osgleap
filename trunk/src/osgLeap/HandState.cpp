@@ -18,6 +18,8 @@
 
 namespace osgLeap {
 
+	// UpdateCallback "auto-updates" the osgLeap::HandState Geode from within
+	// the update traversal of the osgViewer
 	class UpdateCallback: public osg::NodeCallback
 	{
 	public:
@@ -33,6 +35,12 @@ namespace osgLeap {
 
 	void HandState::createHandQuad(WhichHand hand)
 	{
+		// Just create a textured quad here...
+		// LEFT_HAND and RIGHT_HAND differs in
+		// - vertex coordinates,
+		// - texture coordinates and
+		// - the texture itself.
+
 		osg::ref_ptr<osg::Geometry> geom = new osg::Geometry();
 		osg::ref_ptr<osg::Vec3Array> va = new osg::Vec3Array();
 		geom->setVertexArray(va);
@@ -85,9 +93,16 @@ namespace osgLeap {
 		lhTex_(new osg::Texture2D()),
 		rhTex_(new osg::Texture2D())
 	{
+		// Initialize UpdateCallback to update myself during updateTraversal
 		addUpdateCallback(new UpdateCallback());
 
 		osgLeap::Controller::instance()->addListener(*this);
+
+		// Load textures for hands visualization.
+		// Note that all hands images must be either in the same
+		// directory as the executable, or in the current working
+		// directory or in a path that is defined in the OSG_FILE_PATH
+		// system enviroment variable
 		handsTextures_.push_back(osgDB::readImageFile("nohand.png"));
 		handsTextures_.push_back(osgDB::readImageFile("hand0.png"));
 		handsTextures_.push_back(osgDB::readImageFile("hand1.png"));
@@ -96,6 +111,8 @@ namespace osgLeap {
 		handsTextures_.push_back(osgDB::readImageFile("hand4.png"));
 		handsTextures_.push_back(osgDB::readImageFile("hand5.png"));
 
+		// Prescale images to square resolution so we avoid doing that
+		// during update
 		handsTextures_.at(0)->scaleImage(1024, 1024, 1);
 		handsTextures_.at(1)->scaleImage(1024, 1024, 1);
 		handsTextures_.at(2)->scaleImage(1024, 1024, 1);
@@ -104,11 +121,15 @@ namespace osgLeap {
 		handsTextures_.at(5)->scaleImage(1024, 1024, 1);
 		handsTextures_.at(6)->scaleImage(1024, 1024, 1);
 
+		// Set DataVariance to DYNAMIC to avoid the texture changes being
+		// optimized away.
 		lhTex_->setDataVariance(osg::Object::DYNAMIC);
 		lhTex_->setImage(handsTextures_.at(0));
 		rhTex_->setDataVariance(osg::Object::DYNAMIC);
 		rhTex_->setImage(handsTextures_.at(0));
 
+		// Now finally, create the QUAD geometry to put our texture onto
+		// Note that this method should be called once per hand, only.
 		createHandQuad(LEFT_HAND);
 		createHandQuad(RIGHT_HAND);
 	}
@@ -122,30 +143,52 @@ namespace osgLeap {
 		const osg::CopyOp& copyOp): osg::Geode(*this), Leap::Listener(*this),
 		frame_(Leap::Frame())
 	{
-
+		// ToDo: Copy texture2d member variables (lhTex_, rhTex_) correctly...
 	}
 
 	void HandState::onFrame(const Leap::Controller& controller)
 	{
-		// Get the most recent frame and store it to later use in update(...)
+		// Get the most recent frame and store it for later use in update(...)
 		frame_ = controller.frame();
 	}
 
 	void HandState::update()
 	{
+		// Grab the frame to work on ...
 		Leap::Frame frame = frame_;
 
+		// Setup "no-hand" image as default
 		osg::Image* lh = handsTextures_.at(0);
 		osg::Image* rh = handsTextures_.at(0);
 
+		// Continue if there it at least one hand, only.
 		if (frame.hands().count() > 0) {
+			// Using leftmost and rightmost hands
 			Leap::Hand left = frame.hands().leftmost();
 			Leap::Hand right = frame.hands().rightmost();
+			// Count the fingers we have detected...
+			int r_fingers = right.fingers().count()+1;
+			int l_fingers = left.fingers().count()+1;
+			// Avoid crash if textures were not loaded
+			// or if we have more than 5 fingers per hand ;-)
+			if (r_fingers > handsTextures_.size()) {
+				OSG_WARN<<"WARN: Not enough images ("<<handsTextures_.size()<<") for right hand finger count ("<<r_fingers-1<<"), aborting HandState::update."<<std::endl;
+				return;
+			}
+			if (l_fingers > handsTextures_.size()) {
+				OSG_WARN<<"WARN: Not enough images ("<<handsTextures_.size()<<") for left hand finger count ("<<l_fingers-1<<"), aborting HandState::update."<<std::endl;
+				return;
+			}
+			// Compare hands IDs to determine if leftmost hand and rightmost
+			// hand are the same
 			if (left.id() == right.id()) {
-				rh = handsTextures_.at(right.fingers().count()+1);
+				// Assume right hand if we have one hand, only.
+				// (As we cannot distinguish between the actual right and left
+				// hand. We operate on "leftmost" and "rightmost" hands only.)
+				rh = handsTextures_.at(r_fingers);
 			} else {
-				rh = handsTextures_.at(right.fingers().count()+1);
-				lh = handsTextures_.at(left.fingers().count()+1);
+				rh = handsTextures_.at(r_fingers);
+				lh = handsTextures_.at(l_fingers);
 			}
 		}
 
