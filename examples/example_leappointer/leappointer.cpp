@@ -54,7 +54,7 @@ osg::Camera* createHUD()
         osg::StateSet* stateset = geode->getOrCreateStateSet();
         stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
-        osg::Vec3 position(150.0f,800.0f,0.0f);
+        osg::Vec3 position(150.0f,200.0f,0.0f);
         osg::Vec3 delta(0.0f,-120.0f,0.0f);
 
         {
@@ -68,7 +68,6 @@ osg::Camera* createHUD()
             position += delta;
         }
 
-
         camera->addChild(geode);
 
 		camera->addChild(new osgLeap::HandState());
@@ -76,6 +75,29 @@ osg::Camera* createHUD()
 
     return camera;
 }
+
+class ResizeUpdateCallback: public osg::NodeCallback
+{
+public:
+	ResizeUpdateCallback(osg::Camera* camera): camera_(camera)
+	{
+		
+	}
+
+    virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
+    {
+		// ToDo: Handle camera resize in a better way
+		float screenheight = camera_->getGraphicsContext()->getTraits()->height;
+		float screenwidth  = camera_->getGraphicsContext()->getTraits()->width;
+
+		camera_->setProjectionMatrix(osg::Matrix::ortho2D(0.0f, screenwidth, 0.0f, screenheight));
+
+        traverse(node, nv);
+    }
+
+private:
+	osg::ref_ptr<osg::Camera> camera_;
+};
 
 int main(int argc, char** argv)
 {
@@ -150,6 +172,7 @@ int main(int argc, char** argv)
     viewer.realize();
 
     osg::Camera* hudCamera = createHUD();
+	hudCamera->addUpdateCallback(new ResizeUpdateCallback(hudCamera));
 
 	osg::ref_ptr<osg::Group> pointersGroup = new osg::Group();
 

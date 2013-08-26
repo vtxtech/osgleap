@@ -80,7 +80,6 @@ private:
 	osg::ref_ptr<osg::Camera> camera_;
 };
 
-
 int main(int argc, char** argv)
 {
     // use an ArgumentParser object to manage the program arguments.
