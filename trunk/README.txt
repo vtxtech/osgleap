@@ -7,8 +7,13 @@
 # Change Notes osgLeap v.0.1.3
 # ------------------------------
 #
+# * Added osgLeap::HandState visualizer to give the user a hint on what the Leap
+#     Device is currently seeing. 
+# * Introduced osgLeap::UpdateCallback for visualization of the positions you
+#     are pointing at. Refer to example_leappointer for usage examples.
 # * Renamed osgLeap::LeapManipulator to osgLeap::OrbitManipulator. This is done
 #     in order to avoid naming issues with future additional manipulators.
+# * Renamed example_leapdemo to example_leaporbit
 #
 # -----------------------------------------------------------------------------
 # Change Notes osgLeap v.0.1.2
