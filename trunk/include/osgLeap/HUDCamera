@@ -1,0 +1,43 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_HUDCAMERA_
+#define OSGLEAP_HUDCAMERA_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+
+//-- OSG: osg --//
+#include <osg/Camera>
+
+//-- OSG: osgViewer --//
+#include <osgViewer/GraphicsWindow>
+
+namespace osgLeap {
+
+    // Utility class for use with the osgLeap examples
+    class OSGLEAP_EXPORT HUDCamera: public osg::Camera
+    {
+    public:
+        // Parameter-constructor
+        HUDCamera(osgViewer::GraphicsWindow* graphicsWindow);
+
+        // Copy-constructor
+        HUDCamera(const HUDCamera& hs,
+            const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
+
+        // Virtual destructor
+        virtual ~HUDCamera();
+
+    };
+
+} /* namespace osgLeap */
+
+#endif /* OSGLEAP_HUDCAMERA_ */

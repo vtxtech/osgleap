@@ -21,6 +21,7 @@ SET(TARGET_H
     ${HEADER_PATH}/Controller
     ${HEADER_PATH}/Export
 	${HEADER_PATH}/HandState
+	${HEADER_PATH}/HUDCamera
 	${HEADER_PATH}/IntersectionController
 	${HEADER_PATH}/IntersectionUpdateCallback
 	${HEADER_PATH}/Listener
@@ -30,6 +31,7 @@ SET(TARGET_H
 SET(TARGET_SRC
 	Controller.cpp
 	HandState.cpp
+	HUDCamera.cpp
 	IntersectionController.cpp
 	IntersectionUpdateCallback.cpp
     OrbitManipulator.cpp
