@@ -11,6 +11,7 @@
 #include <osgLeap/IntersectionUpdateCallback>
 
 //-- OSG: osg --//
+#include <osg/io_utils>
 #include <osg/PositionAttitudeTransform>
 #include <osg/ShapeDrawable>
 #include <osg/ValueObject>
@@ -95,6 +96,8 @@ namespace osgLeap {
         // Now update our Geode to display the pointers
         osg::ref_ptr<osg::Group> group = dynamic_cast<osg::Group*>(node);
         if (group.valid()) {
+            group->setDataVariance(osg::Object::DYNAMIC);
+
             osgLeap::PointerMap pointers = intersectionController_->getPointers();
 
             PatMap transforms;
@@ -138,6 +141,9 @@ namespace osgLeap {
                 // using the 3D window resolution. Z is always zero.
                 osg::Vec3 vec = osg::Vec3(p->getPosition().x()*screenwidth_, p->getPosition().y()*screenheight_, 0.0f);
                 pat->setPosition(vec);
+                if (p->clickTimeHasElapsed(3000)) {
+                    OSG_NOTICE<<"CLICK @ "<<vec<<std::endl;
+                }
             }
         }
 
