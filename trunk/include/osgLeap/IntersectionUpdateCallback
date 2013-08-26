@@ -66,10 +66,6 @@ namespace osgLeap {
 		// as reference.
 		void setResolution(int screenwidth, int screenheight);
 
-		osg::ref_ptr<osg::Node> createPointerGeode();
-
-		osg::Vec4 getColor();
-
 		virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
 	private:
@@ -78,6 +74,9 @@ namespace osgLeap {
 		int colorIndex_;
 		float screenheight_;
 		float screenwidth_;
+
+		osg::ref_ptr<osg::Node> createPointerGeode();
+		osg::Vec4 getColor();
 	};
 
 } // namespace osgLeap
