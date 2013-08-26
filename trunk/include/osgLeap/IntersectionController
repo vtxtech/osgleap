@@ -20,6 +20,7 @@
 
 //-- OSG --//
 #include <osg/Object>
+#include <osg/Timer>
 #include <osg/Vec2>
 
 //-- STL --//
@@ -31,20 +32,44 @@ namespace osgLeap {
     // finger or tool pointing at the screen
     class OSGLEAP_EXPORT Pointer: public osg::Referenced {
     public:
-        Pointer(const osg::Vec2& position, int pointableID): position_(position), pointableID_(pointableID) {
-
+        Pointer(const osg::Vec2& position, int pointableID): position_(position),
+            pointableID_(pointableID),
+            deltaMax_(0.025f) {
+            setTimedPosition(position.x(), position.y());
         }
 
         const osg::Vec2& getPosition() const { return position_; }
         osg::Vec2 getPosition() { return position_; }
-        void setPosition(const osg::Vec2& pos) { position_ = pos; }
-        void setPosition(float x, float y) { position_.set(x, y); }
-        void setPosition(double x, double y) { position_.set(x, y); }
+
+        void setPosition(const osg::Vec2& pos) {
+            if (time_ == 0 || ((pos - timedPosition_).length() > deltaMax_)) {
+                setTimedPosition(pos);
+            }
+            position_ = pos;
+        }
+        void setPosition(float x, float y) { setPosition(osg::Vec2(x, y)); }
+
+        void setTimedPosition(const osg::Vec2& pos) { timedPosition_ = pos; time_ = osg::Timer::instance()->tick(); }
+        void setTimedPosition(float x, float y) {  setTimedPosition(osg::Vec2(x, y)); }
+
+        bool clickTimeHasElapsed(int time)
+        {
+            if ((time_ != 0) && (osg::Timer::instance()->delta_m(time_, osg::Timer::instance()->tick()) > time)) {
+                time_ = 0;
+                return true;
+            } else {
+                return false;
+            }
+        }
 
         int getPointableID() { return pointableID_; }
         int getPointableID() const { return pointableID_; }
 
-    private:
+    private: 
+        osg::Timer_t time_;
+        osg::Vec2 timedPosition_;
+        float deltaMax_;
+        
         osg::Vec2 position_;
         int pointableID_;
     };
