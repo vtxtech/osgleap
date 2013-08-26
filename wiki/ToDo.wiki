@@ -1,7 +1,7 @@
 #summary ToDo-Page for osgLeap
 = List of open tasks =
   * Stabilization of singlehanded interaction metaphors
-  * Finger pointing
+  * Click-support in IntersectionController
   * First person fly navigation
   * First person walk navigation
   * Classes for gesture recognition adding more gestures to detect which are not detected by the Leap SDK, yet.
