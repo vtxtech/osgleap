@@ -1,12 +1,12 @@
 /*
- * Library osgLeap
- * Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
- *
- * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
- * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- */
+* Library osgLeap
+* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
 
 #ifndef OSGLEAP_INTERSECTIONCONTROLLER_
 #define OSGLEAP_INTERSECTIONCONTROLLER_ 1
@@ -27,61 +27,61 @@
 
 namespace osgLeap {
 
-	// A class that represents a single pointer which is calculated from a
-	// finger or tool pointing at the screen
-	class OSGLEAP_EXPORT Pointer: public osg::Referenced {
-	public:
-		Pointer(const osg::Vec2& position, int pointableID): position_(position), pointableID_(pointableID) {
-			
-		}
+    // A class that represents a single pointer which is calculated from a
+    // finger or tool pointing at the screen
+    class OSGLEAP_EXPORT Pointer: public osg::Referenced {
+    public:
+        Pointer(const osg::Vec2& position, int pointableID): position_(position), pointableID_(pointableID) {
 
-		const osg::Vec2& getPosition() const { return position_; }
-		osg::Vec2 getPosition() { return position_; }
-		void setPosition(const osg::Vec2& pos) { position_ = pos; }
-		void setPosition(float x, float y) { position_.set(x, y); }
-		void setPosition(double x, double y) { position_.set(x, y); }
+        }
 
-		int getPointableID() { return pointableID_; }
-		int getPointableID() const { return pointableID_; }
+        const osg::Vec2& getPosition() const { return position_; }
+        osg::Vec2 getPosition() { return position_; }
+        void setPosition(const osg::Vec2& pos) { position_ = pos; }
+        void setPosition(float x, float y) { position_.set(x, y); }
+        void setPosition(double x, double y) { position_.set(x, y); }
 
-	private:
-		osg::Vec2 position_;
-		int pointableID_;
-	};
+        int getPointableID() { return pointableID_; }
+        int getPointableID() const { return pointableID_; }
 
-	typedef std::map<int, osg::ref_ptr<Pointer> > PointerMap;
-	typedef std::pair<int, osg::ref_ptr<Pointer> > PointerPair;
+    private:
+        osg::Vec2 position_;
+        int pointableID_;
+    };
 
-	// A class that supports calculation of screen intersections
-	class OSGLEAP_EXPORT IntersectionController: public osgLeap::Listener
-	{
-		public:
-			// Default constructor
-			IntersectionController();
+    typedef std::map<int, osg::ref_ptr<Pointer> > PointerMap;
+    typedef std::pair<int, osg::ref_ptr<Pointer> > PointerPair;
 
-			// Copy constructor
-			IntersectionController(const IntersectionController& lm,
-						const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
+    // A class that supports calculation of screen intersections
+    class OSGLEAP_EXPORT IntersectionController: public osgLeap::Listener
+    {
+    public:
+        // Default constructor
+        IntersectionController();
 
-			// Virtual destructor
-			virtual ~IntersectionController();
+        // Copy constructor
+        IntersectionController(const IntersectionController& lm,
+            const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
 
-			META_Object( osgLeap, IntersectionController );
+        // Virtual destructor
+        virtual ~IntersectionController();
 
-			// Called by Leap::Controller asynchronously
-			virtual void onFrame(const Leap::Controller&);
+        META_Object( osgLeap, IntersectionController );
 
-			// Call this during update cycle to update PointerMap
-			virtual void update();
+        // Called by Leap::Controller asynchronously
+        virtual void onFrame(const Leap::Controller&);
 
-			PointerMap getPointers() { return pointers_; }
-			const PointerMap& getPointers() const { return pointers_; }
+        // Call this during update cycle to update PointerMap
+        virtual void update();
 
-		protected:
-			Leap::Frame frame_;
-			Leap::Screen screen_;
-			PointerMap pointers_;
-	};
+        PointerMap getPointers() { return pointers_; }
+        const PointerMap& getPointers() const { return pointers_; }
+
+    protected:
+        Leap::Frame frame_;
+        Leap::Screen screen_;
+        PointerMap pointers_;
+    };
 
 } /* namespace osgLeap */
 
