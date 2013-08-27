@@ -12,6 +12,7 @@
 
 //-- OSG: osg --//
 #include <osg/io_utils>
+#include <osg/Material>
 #include <osg/PositionAttitudeTransform>
 #include <osg/ShapeDrawable>
 #include <osg/ValueObject>
@@ -23,7 +24,7 @@ namespace osgLeap {
         float radius = 10.0f;
         osg::TessellationHints* hints = new osg::TessellationHints();
         hints->setDetailRatio(0.5f);
-        osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3(0.0f,0.0f,0.0f),radius),hints);
+        osg::ref_ptr<osg::ShapeDrawable> sd = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3(0.0f,0.0f,0.0f), radius), hints);
         sd->setColor(getColor());
         sphere->addDrawable(sd);
         return sphere;
@@ -112,6 +113,15 @@ namespace osgLeap {
                 osg::ref_ptr<osg::PositionAttitudeTransform> pat = NULL;
                 if (patitr != transforms.end()) {
                     pat = patitr->second;
+                    osg::Geode* geode = dynamic_cast<osg::Geode*>(pat->getChild(0));
+                    if (geode) {
+                        osg::ShapeDrawable* sd = dynamic_cast<osg::ShapeDrawable*>(geode->getDrawable(0));
+                        float f = 1-p->clickTimeProgress(3000);
+                        osg::Vec4 color(sd->getColor().x(), sd->getColor().y(), sd->getColor().z(), f);
+                        sd->setColor(color);
+                        sd->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
+                        sd->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+                    }
                 } else {
                     // Add new pointer
                     pat = new osg::PositionAttitudeTransform();

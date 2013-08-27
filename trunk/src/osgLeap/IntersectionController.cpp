@@ -71,7 +71,7 @@ namespace osgLeap {
         Leap::Screen screen = screen_;
 
         // Auto-update to reference camera's resolution
-        // Please use setResolution to update manually, if this object
+        // Please use setResolution to update manually, if this IntersectionController
         // is constructed without reference camera.
         if (camera_ != NULL) {
             screenheight_ = camera_->getGraphicsContext()->getTraits()->height;
