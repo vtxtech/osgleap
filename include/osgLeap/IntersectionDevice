@@ -1,0 +1,52 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_INTERSECTIONDEVICE_
+#define OSGLEAP_INTERSECTIONDEVICE_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+#include <osgLeap/IntersectionController>
+
+//-- OSG: osg --//
+#include <osgGA/Device>
+
+namespace osgLeap {
+
+    class OSGLEAP_EXPORT IntersectionDevice: public osgGA::Device
+    {
+    public:
+        // Parameter-constructor with auto-update to screen resolution
+        IntersectionDevice(IntersectionController* intersectionController): osgGA::Device(),
+            intersectionController_(intersectionController)
+        {
+            //OSG_NOTICE<<"IntersectionDevice::IntersectionDevice()"<<std::endl;
+            setCapabilities(RECEIVE_EVENTS);
+        }
+
+        // Copy-constructor
+        IntersectionDevice(const IntersectionDevice& nc, const osg::CopyOp& op): osgGA::Device(nc, op),
+            intersectionController_(nc.intersectionController_)
+        {
+            //OSG_NOTICE<<"IntersectionDevice::IntersectionDevice(const IntersectionDevice& nc, const osg::CopyOp& op)"<<std::endl;
+        }
+
+        virtual bool checkEvents();
+        virtual void sendEvent(const osgGA::GUIEventAdapter& ea);
+
+    private:
+        void update();
+
+        osg::ref_ptr<IntersectionController> intersectionController_;
+    };
+
+} // namespace osgLeap
+
+#endif // OSGLEAP_INTERSECTIONDEVICE_
