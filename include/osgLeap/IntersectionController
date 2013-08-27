@@ -35,7 +35,7 @@ namespace osgLeap {
     public:
         Pointer(const osg::Vec2& position, int pointableID): position_(position),
             pointableID_(pointableID),
-            deltaMax_(0.025f) {
+            deltaMax_(20.0f) {
             setTimedPosition(position.x(), position.y());
         }
 
@@ -53,14 +53,26 @@ namespace osgLeap {
         void setTimedPosition(const osg::Vec2& pos) { timedPosition_ = pos; time_ = osg::Timer::instance()->tick(); }
         void setTimedPosition(float x, float y) {  setTimedPosition(osg::Vec2(x, y)); }
 
+        float clickTimeProgress(int time)
+        {
+            double delta = osg::Timer::instance()->delta_m(time_, osg::Timer::instance()->tick());
+            if ((time_ != 0) && (delta > time)) {
+                return 1.0f;
+            } else {
+                if (time <= 0.0f || time_ <= 0.0f) return 0.0f;
+                return delta/time;
+            }
+        }
+
         bool clickTimeHasElapsed(int time)
         {
-            if ((time_ != 0) && (osg::Timer::instance()->delta_m(time_, osg::Timer::instance()->tick()) > time)) {
+            double delta = osg::Timer::instance()->delta_m(time_, osg::Timer::instance()->tick());
+            if ((time_ != 0) && (delta > time)) {
                 time_ = 0;
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         }
 
         int getPointableID() { return pointableID_; }

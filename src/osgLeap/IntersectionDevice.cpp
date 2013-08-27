@@ -34,9 +34,9 @@ namespace osgLeap {
         PointerMap pointers = intersectionController_->getPointers();
         for (PointerMap::iterator itr = pointers.begin(); itr != pointers.end(); ++itr) {
             // ToDo: Emit mouseMotion if mouse has moved, only.
-            OSG_NOTICE<<"MOUSEMOTION @ "<<itr->second->getPosition()<<std::endl;
             _eventQueue->mouseMotion(itr->second->getPosition().x(), itr->second->getPosition().y());
             // ToDo: Make elapsedTime definable
+            // ToDo: Add a NodeMask & combine that with an intersection. Invoke a click only if matching intersection is under cursor.
             if (itr->second->clickTimeHasElapsed(3000)) {
                 _eventQueue->mouseButtonPress(itr->second->getPosition().x(), itr->second->getPosition().y(), 1);
                 _eventQueue->mouseButtonRelease(itr->second->getPosition().x(), itr->second->getPosition().y(), 1);
