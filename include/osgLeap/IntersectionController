@@ -52,6 +52,7 @@ namespace osgLeap {
 
         void setTimedPosition(const osg::Vec2& pos) { timedPosition_ = pos; time_ = osg::Timer::instance()->tick(); }
         void setTimedPosition(float x, float y) {  setTimedPosition(osg::Vec2(x, y)); }
+        float getDeltaMax() { return deltaMax_; }
 
         float clickTimeProgress(int time)
         {
