@@ -23,8 +23,14 @@
 
 namespace osgLeap {
 
-    IntersectionController::IntersectionController(): osgLeap::Listener(),
-        frame_(Leap::Frame())
+    IntersectionController::IntersectionController(int screenwidth, int screenheight): osgLeap::Listener(),
+        frame_(Leap::Frame()), camera_(NULL)
+    {
+        osgLeap::Controller::instance()->addListener(*this);
+    }
+
+     IntersectionController::IntersectionController(osg::Camera* camera): camera_(camera),
+            screenwidth_(800), screenheight_(600)
     {
         osgLeap::Controller::instance()->addListener(*this);
     }
@@ -36,9 +42,18 @@ namespace osgLeap {
 
     IntersectionController::IntersectionController(const IntersectionController& lm,
         const osg::CopyOp& copyOp): osgLeap::Listener(*this),
-        frame_(Leap::Frame())
+        frame_(Leap::Frame()),
+        screenwidth_(lm.screenwidth_),
+        screenheight_(lm.screenheight_),
+        camera_(lm.camera_)
     {
 
+    }
+
+    void IntersectionController::setResolution(int screenwidth, int screenheight)
+    {
+        screenwidth_ = screenwidth;
+        screenheight_ = screenheight;
     }
 
     void IntersectionController::onFrame(const Leap::Controller& controller)
@@ -55,11 +70,24 @@ namespace osgLeap {
         Leap::PointableList pl = frame_.pointables();
         Leap::Screen screen = screen_;
 
+        // Auto-update to reference camera's resolution
+        // Please use setResolution to update manually, if this object
+        // is constructed without reference camera.
+        if (camera_ != NULL) {
+            screenheight_ = camera_->getGraphicsContext()->getTraits()->height;
+            screenwidth_  = camera_->getGraphicsContext()->getTraits()->width;
+        }
+
         // Update pointers as required. Add new pointers where additional pointables
         // result in a valid intersection.
         std::list<int> validIDs;
         for (Leap::PointableList::const_iterator itr = pl.begin(); itr != pl.end(); ++itr) {
             Leap::Vector pos = screen.intersect(*itr, true);
+            // Calculate pixel screen position from relative Leap values [X: 0.0 to 1.0, Y: 0.0 to 1.0]
+            // using the 3D window resolution. Z is always zero.
+            pos.x = std::ceil(pos.x * screenwidth_);
+            pos.y = std::ceil(pos.y * screenheight_);
+
             // skip pointable if no valid intersection
             if (!pos.isValid()) { continue; }
             // lookup Pointer for this pointable

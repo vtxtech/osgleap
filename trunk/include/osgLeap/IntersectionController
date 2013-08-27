@@ -19,6 +19,7 @@
 #include <Leap.h>
 
 //-- OSG --//
+#include <osg/Camera>
 #include <osg/Object>
 #include <osg/Timer>
 #include <osg/Vec2>
@@ -81,8 +82,12 @@ namespace osgLeap {
     class OSGLEAP_EXPORT IntersectionController: public osgLeap::Listener
     {
     public:
-        // Default constructor
-        IntersectionController();
+        // Parameter-constructor with fixed screen resolution
+        // Use setResolution to update during runtime
+        IntersectionController(int screenwidth = 640, int screenheight = 480);
+
+        // Parameter-constructor with auto-update to screen resolution
+        IntersectionController(osg::Camera* camera);
 
         // Copy constructor
         IntersectionController(const IntersectionController& lm,
@@ -92,6 +97,16 @@ namespace osgLeap {
         virtual ~IntersectionController();
 
         META_Object( osgLeap, IntersectionController );
+        
+        // Updates the current reference resolution to calculate actual
+        // pointer position from Leap Motion's relative position values
+        // (Leap reports values from 0.0 to 1.0 for both axes, but we
+        //  need absolute pixel coordinates here)
+        //
+        // NOTE: Setting resolution has no effect, if
+        // IntersectionUpdateCallback was constructed with an osg::Camera
+        // as reference.
+        void setResolution(int screenwidth, int screenheight);
 
         // Called by Leap::Controller asynchronously
         virtual void onFrame(const Leap::Controller&);
@@ -103,6 +118,10 @@ namespace osgLeap {
         const PointerMap& getPointers() const { return pointers_; }
 
     protected:
+        osg::ref_ptr<osg::Camera> camera_;
+        float screenheight_;
+        float screenwidth_;
+
         Leap::Frame frame_;
         Leap::Screen screen_;
         PointerMap pointers_;

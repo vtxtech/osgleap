@@ -18,12 +18,6 @@
 
 namespace osgLeap {
 
-    void IntersectionUpdateCallback::setResolution(int screenwidth, int screenheight)
-    {
-        screenwidth_ = screenwidth;
-        screenheight_ = screenheight;
-    }
-
     osg::ref_ptr<osg::Node> IntersectionUpdateCallback::createPointerGeode() {
         osg::ref_ptr<osg::Geode> sphere = new osg::Geode();
         float radius = 10.0f;
@@ -85,14 +79,6 @@ namespace osgLeap {
         // Grab data from Leap Motion
         intersectionController_->update();
 
-        // Auto-update to reference camera's resolution
-        // Please use setResolution to update manually, if this object
-        // is constructed without reference camera.
-        if (camera_ != NULL) {
-            screenheight_ = camera_->getGraphicsContext()->getTraits()->height;
-            screenwidth_  = camera_->getGraphicsContext()->getTraits()->width;
-        }
-
         // Now update our Geode to display the pointers
         osg::ref_ptr<osg::Group> group = dynamic_cast<osg::Group*>(node);
         if (group.valid()) {
@@ -137,13 +123,8 @@ namespace osgLeap {
                     transforms.insert(PatPair(itr->first, pat));
                 }
 
-                // Calculate pixel screen position from relative Leap values [X: 0.0 to 1.0, Y: 0.0 to 1.0]
-                // using the 3D window resolution. Z is always zero.
-                osg::Vec3 vec = osg::Vec3(p->getPosition().x()*screenwidth_, p->getPosition().y()*screenheight_, 0.0f);
+                osg::Vec3 vec = osg::Vec3(p->getPosition().x(), p->getPosition().y(), 0.0f);
                 pat->setPosition(vec);
-                if (p->clickTimeHasElapsed(3000)) {
-                    OSG_NOTICE<<"CLICK @ "<<vec<<std::endl;
-                }
             }
         }
 

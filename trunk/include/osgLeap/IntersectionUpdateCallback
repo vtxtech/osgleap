@@ -30,50 +30,34 @@ namespace osgLeap {
 
         // Parameter-constructor with fixed screen resolution
         // Use setResolution to update during runtime
-        IntersectionUpdateCallback(int screenwidth, int screenheight): camera_(NULL),
-            intersectionController_(new osgLeap::IntersectionController()), colorIndex_(0),
-            screenwidth_(screenwidth), screenheight_(screenheight)
+        IntersectionUpdateCallback(int screenwidth = 640, int screenheight = 480): intersectionController_(new osgLeap::IntersectionController(screenwidth, screenheight)),
+            colorIndex_(0)
         {
 
         }
 
         // Parameter-constructor with auto-update to screen resolution
-        IntersectionUpdateCallback(osg::Camera* camera): camera_(camera),
-            intersectionController_(new osgLeap::IntersectionController()), colorIndex_(0),
-            screenwidth_(800), screenheight_(600)
+        IntersectionUpdateCallback(osg::Camera* camera): intersectionController_(new osgLeap::IntersectionController(camera)),
+            colorIndex_(0)
         {
 
         }
 
         // Copy-constructor
         IntersectionUpdateCallback(const IntersectionUpdateCallback& nc, const osg::CopyOp& op): NodeCallback(nc, op),
-            camera_(nc.camera_),
-            intersectionController_(nc.intersectionController_),
-            colorIndex_(nc.colorIndex_),
-            screenwidth_(nc.screenwidth_),
-            screenheight_(nc.screenheight_)
+            intersectionController_(new osgLeap::IntersectionController(*nc.intersectionController_)),
+            colorIndex_(nc.colorIndex_)
         {
 
         }
 
-        // Updates the current reference resolution to calculate actual
-        // pointer position from Leap Motion's relative position values
-        // (Leap reports values from 0.0 to 1.0 for both axes, but we
-        //  need absolute pixel coordinates here)
-        //
-        // NOTE: Setting resolution has no effect, if
-        // IntersectionUpdateCallback was constructed with an osg::Camera
-        // as reference.
-        void setResolution(int screenwidth, int screenheight);
-
         virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
+
+        osgLeap::IntersectionController* getIntersectionController() { return intersectionController_; }
 
     private:
         osg::ref_ptr<osgLeap::IntersectionController> intersectionController_;
-        osg::ref_ptr<osg::Camera> camera_;
         int colorIndex_;
-        float screenheight_;
-        float screenwidth_;
 
         osg::Vec4 getColor();
 

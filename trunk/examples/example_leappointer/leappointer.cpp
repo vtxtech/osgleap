@@ -21,6 +21,7 @@
 #include <osgLeap/HandState>
 #include <osgLeap/HUDCamera>
 #include <osgLeap/IntersectionController>
+#include <osgLeap/IntersectionDevice>
 #include <osgLeap/IntersectionUpdateCallback>
 
 osg::ref_ptr<osg::Node> createText()
@@ -141,6 +142,8 @@ int main(int argc, char** argv)
     osg::ref_ptr<osgLeap::IntersectionUpdateCallback> puc = new osgLeap::IntersectionUpdateCallback(hudCamera);
     pointersGroup->addUpdateCallback(puc);
     hudCamera->addChild(pointersGroup);
+
+    viewer.addDevice(new osgLeap::IntersectionDevice(puc->getIntersectionController()));
 
     viewer.addSlave(hudCamera, false);
 
