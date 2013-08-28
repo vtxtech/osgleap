@@ -113,14 +113,16 @@ namespace osgLeap {
                 osg::ref_ptr<osg::PositionAttitudeTransform> pat = NULL;
                 if (patitr != transforms.end()) {
                     pat = patitr->second;
-                    osg::Geode* geode = dynamic_cast<osg::Geode*>(pat->getChild(0));
-                    if (geode) {
-                        osg::ShapeDrawable* sd = dynamic_cast<osg::ShapeDrawable*>(geode->getDrawable(0));
-                        float f = 1-p->clickTimeProgress(3000);
-                        osg::Vec4 color(sd->getColor().x(), sd->getColor().y(), sd->getColor().z(), f);
-                        sd->setColor(color);
-                        sd->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
-                        sd->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+                    if (referenceTime_ != 0) {
+                        osg::Geode* geode = dynamic_cast<osg::Geode*>(pat->getChild(0));
+                        if (geode) {
+                            osg::ShapeDrawable* sd = dynamic_cast<osg::ShapeDrawable*>(geode->getDrawable(0));
+                            float f = 1-p->clickTimeProgress(referenceTime_);
+                            osg::Vec4 color(sd->getColor().x(), sd->getColor().y(), sd->getColor().z(), f);
+                            sd->setColor(color);
+                            sd->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
+                            sd->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+                        }
                     }
                 } else {
                     // Add new pointer

@@ -30,15 +30,15 @@ namespace osgLeap {
 
         // Parameter-constructor with fixed screen resolution
         // Use setResolution to update during runtime
-        IntersectionUpdateCallback(int screenwidth = 640, int screenheight = 480): intersectionController_(new osgLeap::IntersectionController(screenwidth, screenheight)),
-            colorIndex_(0)
+        IntersectionUpdateCallback(int windowwidth = 640, int windowheight = 480, int referenceTime = 0): intersectionController_(new osgLeap::IntersectionController(windowwidth, windowheight)),
+            colorIndex_(0), referenceTime_(referenceTime)
         {
 
         }
 
         // Parameter-constructor with auto-update to screen resolution
-        IntersectionUpdateCallback(osg::Camera* camera): intersectionController_(new osgLeap::IntersectionController(camera)),
-            colorIndex_(0)
+        IntersectionUpdateCallback(osg::Camera* camera, int referenceTime = 0): intersectionController_(new osgLeap::IntersectionController(camera)),
+            colorIndex_(0), referenceTime_(referenceTime)
         {
 
         }
@@ -46,7 +46,7 @@ namespace osgLeap {
         // Copy-constructor
         IntersectionUpdateCallback(const IntersectionUpdateCallback& nc, const osg::CopyOp& op): NodeCallback(nc, op),
             intersectionController_(new osgLeap::IntersectionController(*nc.intersectionController_)),
-            colorIndex_(nc.colorIndex_)
+            colorIndex_(nc.colorIndex_), referenceTime_(nc.referenceTime_)
         {
 
         }
@@ -58,6 +58,7 @@ namespace osgLeap {
     private:
         osg::ref_ptr<osgLeap::IntersectionController> intersectionController_;
         int colorIndex_;
+        int referenceTime_;
 
         osg::Vec4 getColor();
 

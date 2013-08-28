@@ -97,7 +97,7 @@ namespace osgLeap {
     public:
         // Parameter-constructor with fixed screen resolution
         // Use setResolution to update during runtime
-        IntersectionController(int screenwidth = 640, int screenheight = 480);
+        IntersectionController(int windowwidth = 640, int windowheight = 480);
 
         // Parameter-constructor with auto-update to screen resolution
         IntersectionController(osg::Camera* camera);
@@ -119,7 +119,7 @@ namespace osgLeap {
         // NOTE: Setting resolution has no effect, if
         // IntersectionUpdateCallback was constructed with an osg::Camera
         // as reference.
-        void setResolution(int screenwidth, int screenheight);
+        void setResolution(int windowwidth, int windowheight);
 
         // Called by Leap::Controller asynchronously
         virtual void onFrame(const Leap::Controller&);
@@ -130,13 +130,17 @@ namespace osgLeap {
         PointerMap getPointers() { return pointers_; }
         const PointerMap& getPointers() const { return pointers_; }
 
+        const Leap::GestureList& getGestures() const { return gestures_; }
+
     protected:
         osg::ref_ptr<osg::Camera> camera_;
-        float screenheight_;
-        float screenwidth_;
+        float windowheight_;
+        float windowwidth_;
 
         Leap::Frame frame_;
+        Leap::Frame lastFrame_;
         Leap::Screen screen_;
+        Leap::GestureList gestures_;
         PointerMap pointers_;
     };
 

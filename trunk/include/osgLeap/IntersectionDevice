@@ -23,9 +23,17 @@ namespace osgLeap {
     class OSGLEAP_EXPORT IntersectionDevice: public osgGA::Device
     {
     public:
+        enum ClickMode {
+            NONE = 0,
+            TIMEBASED_MOUSECLICK = 1,
+            SCREENTAP = 2
+        };
+
         // Parameter-constructor with auto-update to screen resolution
-        IntersectionDevice(IntersectionController* intersectionController): osgGA::Device(),
-            intersectionController_(intersectionController)
+        IntersectionDevice(ClickMode mode, int referenceTime, IntersectionController* intersectionController): osgGA::Device(),
+            intersectionController_(intersectionController),
+            mode_(mode),
+            referenceTime_(referenceTime)
         {
             //OSG_NOTICE<<"IntersectionDevice::IntersectionDevice()"<<std::endl;
             setCapabilities(RECEIVE_EVENTS);
@@ -33,7 +41,7 @@ namespace osgLeap {
 
         // Copy-constructor
         IntersectionDevice(const IntersectionDevice& nc, const osg::CopyOp& op): osgGA::Device(nc, op),
-            intersectionController_(nc.intersectionController_)
+            intersectionController_(nc.intersectionController_), mode_(nc.mode_), referenceTime_(nc.referenceTime_)
         {
             //OSG_NOTICE<<"IntersectionDevice::IntersectionDevice(const IntersectionDevice& nc, const osg::CopyOp& op)"<<std::endl;
         }
@@ -42,9 +50,11 @@ namespace osgLeap {
         virtual void sendEvent(const osgGA::GUIEventAdapter& ea);
 
     private:
-        void update();
-
+        ClickMode mode_;
+        int referenceTime_;
         osg::ref_ptr<IntersectionController> intersectionController_;
+
+        void update();
     };
 
 } // namespace osgLeap
