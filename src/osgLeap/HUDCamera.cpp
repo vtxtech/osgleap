@@ -28,11 +28,11 @@ namespace osgLeap {
 
         virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
         {
-            float screenheight = camera_->getGraphicsContext()->getTraits()->height;
-            float screenwidth  = camera_->getGraphicsContext()->getTraits()->width;
+            float windowheight = camera_->getGraphicsContext()->getTraits()->height;
+            float windowwidth  = camera_->getGraphicsContext()->getTraits()->width;
 
-            camera_->setProjectionMatrix(osg::Matrix::ortho2D(0.0f, screenwidth, 0.0f, screenheight));
-            camera_->setViewport(0, 0, screenwidth, screenheight);
+            camera_->setProjectionMatrix(osg::Matrix::ortho2D(0.0f, windowwidth, 0.0f, windowheight));
+            camera_->setViewport(0, 0, windowwidth, windowheight);
 
             traverse(node, nv);
         }

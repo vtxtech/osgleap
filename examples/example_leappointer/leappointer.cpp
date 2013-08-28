@@ -18,6 +18,7 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
+#include <osgLeap/Controller>
 #include <osgLeap/HandState>
 #include <osgLeap/HUDCamera>
 #include <osgLeap/IntersectionController>
@@ -59,7 +60,9 @@ int main(int argc, char** argv)
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
     arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" is an example showing osgLeap::IntersectionController use.");
     arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename ...");
-    //arguments.getApplicationUsage()->addCommandLineOption("--twohanded", "Initialize the OrbitManipulator in two-handed mode. PAN: One hand, ZOOM: Left hand closed+Right hand open, ROTATE: Both hands open. Move right hand for rotation (default).");
+    arguments.getApplicationUsage()->addCommandLineOption("--timebased", "Invoke mouse clicks after some time if the pointer is not moving (Default)");
+    arguments.getApplicationUsage()->addCommandLineOption("--noclick", "Initialize osgLeap::IntersectionDevice without ability to send clicks");
+    arguments.getApplicationUsage()->addCommandLineOption("--screentap", "Invoke mouse clicks upon the screen tap gesture");
 
     osgViewer::Viewer viewer(arguments);
 
@@ -88,18 +91,23 @@ int main(int argc, char** argv)
     // ToDo: Remove this...
     viewer.setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
 
-    //osgLeap::OrbitManipulator::Mode mode = osgLeap::OrbitManipulator::TwoHanded;
-    //while (arguments.read("--twohanded")) {
-    //	mode = osgLeap::OrbitManipulator::TwoHanded;
-    //}
-    //while (arguments.read("--singlehanded")) {
-    //	mode = osgLeap::OrbitManipulator::SingleHanded;
-    //}
-    //while (arguments.read("--trackball")) {
-    //	mode = osgLeap::OrbitManipulator::Trackball;
-    //}
+    // Defines the time that a pointer needs to stand still
+    // before a mouse click is performed at the current position
+    int clickEmulateStillStandTime = 3000;
 
-    //viewer.setCameraManipulator( new osgLeap::OrbitManipulator(mode) );
+    osgLeap::IntersectionDevice::ClickMode mode = osgLeap::IntersectionDevice::TIMEBASED_MOUSECLICK;
+    while (arguments.read("--noclick")) {
+        mode = osgLeap::IntersectionDevice::NONE;
+        clickEmulateStillStandTime = 0;
+    }
+    while (arguments.read("--timebased")) {
+    	mode = osgLeap::IntersectionDevice::TIMEBASED_MOUSECLICK;
+    }
+    while (arguments.read("--screentap")) {
+        mode = osgLeap::IntersectionDevice::SCREENTAP;
+        osgLeap::Controller::instance()->enableGesture(Leap::Gesture::TYPE_SCREEN_TAP);
+        clickEmulateStillStandTime = 0;
+    }
 
     // load the data
     osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);
@@ -134,16 +142,20 @@ int main(int argc, char** argv)
     // Adds the osgLeap::HandState visualizer
     hudCamera->addChild(new osgLeap::HandState());
 
+    // Add some text to the HUD
     hudCamera->addChild(createText());
 
     viewer.addSlave(hudCamera, false);
 
     osg::ref_ptr<osg::Group> pointersGroup = new osg::Group();
-    osg::ref_ptr<osgLeap::IntersectionUpdateCallback> puc = new osgLeap::IntersectionUpdateCallback(hudCamera);
+    // IntersectionUpdateCallback needs clickEmulateStillStandTime to visualize
+    // the remaining time until the click is executed.
+    osg::ref_ptr<osgLeap::IntersectionUpdateCallback> puc = new osgLeap::IntersectionUpdateCallback(hudCamera, clickEmulateStillStandTime);
     pointersGroup->addUpdateCallback(puc);
     hudCamera->addChild(pointersGroup);
 
-    viewer.addDevice(new osgLeap::IntersectionDevice(puc->getIntersectionController()));
+    // Our IntersectionDevice is initialized to fire mouseclicks after clickEmulateStillStandTime is gone
+    viewer.addDevice(new osgLeap::IntersectionDevice(mode, clickEmulateStillStandTime, puc->getIntersectionController()));
 
     viewer.addSlave(hudCamera, false);
 
