@@ -21,9 +21,9 @@
 #include <osgLeap/Controller>
 #include <osgLeap/HandState>
 #include <osgLeap/HUDCamera>
-#include <osgLeap/IntersectionController>
-#include <osgLeap/IntersectionDevice>
-#include <osgLeap/IntersectionUpdateCallback>
+#include <osgLeap/PointerPositionListener>
+#include <osgLeap/PointerEventDevice>
+#include <osgLeap/PointerGraphicsUpdateCallback>
 
 osg::ref_ptr<osg::Node> createText()
 {
@@ -58,11 +58,15 @@ int main(int argc, char** argv)
     osg::ArgumentParser arguments(&argc,argv);
 
     arguments.getApplicationUsage()->setApplicationName(arguments.getApplicationName());
-    arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" is an example showing osgLeap::IntersectionController use.");
+    arguments.getApplicationUsage()->setDescription(arguments.getApplicationName()+" is an example showing osgLeap::PointerPositionListener use.");
     arguments.getApplicationUsage()->setCommandLineUsage(arguments.getApplicationName()+" [options] filename ...");
     arguments.getApplicationUsage()->addCommandLineOption("--timebased", "Invoke mouse clicks after some time if the pointer is not moving (Default)");
-    arguments.getApplicationUsage()->addCommandLineOption("--noclick", "Initialize osgLeap::IntersectionDevice without ability to send clicks");
+    arguments.getApplicationUsage()->addCommandLineOption("--time <milliseconds>", "Invoke time-based mouse clicks after <milliseconds> (Default: 3000)");
+    arguments.getApplicationUsage()->addCommandLineOption("--noclick", "Initialize osgLeap::PointerEventDevice without ability to send clicks");
+    arguments.getApplicationUsage()->addCommandLineOption("--useintersection", "Invoke clicks above a valid geometry, only.");
     arguments.getApplicationUsage()->addCommandLineOption("--screentap", "Invoke mouse clicks upon the screen tap gesture");
+    arguments.getApplicationUsage()->addCommandLineOption("--mouse", "While moving pointer send mouse motion events. Clicks are sent as mouse clicks.");
+    arguments.getApplicationUsage()->addCommandLineOption("--touch", "While moving pointer send touch move events. Clicks are sent as touch taps.");
 
     osgViewer::Viewer viewer(arguments);
 
@@ -88,25 +92,41 @@ int main(int argc, char** argv)
 
     viewer.addEventHandler(new osgViewer::WindowSizeHandler);
 
-    // ToDo: Remove this...
+    // ToDo/j.scholz: Remove this...
     viewer.setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
 
     // Defines the time that a pointer needs to stand still
     // before a mouse click is performed at the current position
     int clickEmulateStillStandTime = 3000;
+    while (arguments.read("--time", clickEmulateStillStandTime)) {
+        // Nothing else to be done.
+    }
 
-    osgLeap::IntersectionDevice::ClickMode mode = osgLeap::IntersectionDevice::TIMEBASED_MOUSECLICK;
+    osgLeap::PointerEventDevice::EmulationMode emulationMode = osgLeap::PointerEventDevice::MOUSE;
+    while (arguments.read("--mouse")) {
+        emulationMode = osgLeap::PointerEventDevice::MOUSE;
+    }
+    while (arguments.read("--touch")) {
+    	emulationMode = osgLeap::PointerEventDevice::TOUCH;
+    }
+
+    osgLeap::PointerEventDevice::ClickMode clickMode = osgLeap::PointerEventDevice::TIMEBASED_MOUSECLICK;
     while (arguments.read("--noclick")) {
-        mode = osgLeap::IntersectionDevice::NONE;
+        clickMode = osgLeap::PointerEventDevice::NONE;
         clickEmulateStillStandTime = 0;
     }
     while (arguments.read("--timebased")) {
-    	mode = osgLeap::IntersectionDevice::TIMEBASED_MOUSECLICK;
+    	clickMode = osgLeap::PointerEventDevice::TIMEBASED_MOUSECLICK;
     }
     while (arguments.read("--screentap")) {
-        mode = osgLeap::IntersectionDevice::SCREENTAP;
+        clickMode = osgLeap::PointerEventDevice::SCREENTAP;
         osgLeap::Controller::instance()->enableGesture(Leap::Gesture::TYPE_SCREEN_TAP);
         clickEmulateStillStandTime = 0;
+    }
+
+    bool useIntersection = false;
+    while (arguments.read("--useintersection")) {
+        useIntersection = true;
     }
 
     // load the data
@@ -148,14 +168,20 @@ int main(int argc, char** argv)
     viewer.addSlave(hudCamera, false);
 
     osg::ref_ptr<osg::Group> pointersGroup = new osg::Group();
-    // IntersectionUpdateCallback needs clickEmulateStillStandTime to visualize
+    // PointerGraphicsUpdateCallback needs clickEmulateStillStandTime to visualize
     // the remaining time until the click is executed.
-    osg::ref_ptr<osgLeap::IntersectionUpdateCallback> puc = new osgLeap::IntersectionUpdateCallback(hudCamera, clickEmulateStillStandTime);
+    osg::ref_ptr<osgLeap::PointerGraphicsUpdateCallback> puc = new osgLeap::PointerGraphicsUpdateCallback(hudCamera, clickEmulateStillStandTime);
     pointersGroup->addUpdateCallback(puc);
     hudCamera->addChild(pointersGroup);
 
-    // Our IntersectionDevice is initialized to fire mouseclicks after clickEmulateStillStandTime is gone
-    viewer.addDevice(new osgLeap::IntersectionDevice(mode, clickEmulateStillStandTime, puc->getIntersectionController()));
+    // Our PointerEventDevice is initialized to fire mouseclicks after clickEmulateStillStandTime is gone
+    osg::ref_ptr<osgLeap::PointerEventDevice> dev = new osgLeap::PointerEventDevice(clickMode, emulationMode, clickEmulateStillStandTime, puc->getPointerPositionListener());
+    if (useIntersection) {
+        // Setup viewer and nodemask, so clicks will be sent only if we are hovering above some node
+        dev->setView(&viewer);
+        dev->setTraversalMask(0xffffffff);
+    }
+    viewer.addDevice(dev);
 
     viewer.addSlave(hudCamera, false);
 

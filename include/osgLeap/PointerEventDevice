@@ -1,0 +1,100 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_POINTEREVENTDEVICE_
+#define OSGLEAP_POINTEREVENTDEVICE_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+#include <osgLeap/PointerPositionListener>
+
+//-- OSG: osgViewer --//
+#include <osgViewer/View>
+
+//-- OSG: osgGA --//
+#include <osgGA/Device>
+
+namespace osgLeap {
+
+    class OSGLEAP_EXPORT PointerEventDevice: public osgGA::Device
+    {
+    public:
+        enum ClickMode {
+            NONE = 0,
+            TIMEBASED_MOUSECLICK = 1,
+            SCREENTAP = 2
+        };
+
+        enum EmulationMode {
+            MOUSE,
+            TOUCH
+        };
+
+        // Parameter-constructor with auto-update to screen resolution
+        PointerEventDevice(ClickMode clickMode, EmulationMode emuMode, int referenceTime, PointerPositionListener* intersectionController): osgGA::Device(),
+            intersectionController_(intersectionController),
+            clickMode_(clickMode),
+            referenceTime_(referenceTime),
+            traversalMask_(0),
+            view_(NULL),
+            emulationMode_(emuMode)
+        {
+            //OSG_NOTICE<<"PointerEventDevice::PointerEventDevice()"<<std::endl;
+            setCapabilities(RECEIVE_EVENTS);
+        }
+        
+        // Copy-constructor
+        PointerEventDevice(const PointerEventDevice& nc, const osg::CopyOp& op): osgGA::Device(nc, op),
+            intersectionController_(nc.intersectionController_), clickMode_(nc.clickMode_), referenceTime_(nc.referenceTime_),
+            traversalMask_(nc.traversalMask_),
+            view_(nc.view_),
+            emulationMode_(nc.emulationMode_)
+        {
+            //OSG_NOTICE<<"PointerEventDevice::PointerEventDevice(const PointerEventDevice& nc, const osg::CopyOp& op)"<<std::endl;
+        }
+
+        // Destructor
+        ~PointerEventDevice()
+        {
+            view_ = NULL;
+        }
+
+        virtual bool checkEvents();
+        virtual void sendEvent(const osgGA::GUIEventAdapter& ea);
+
+        // If set, click events are generated if the pointer is intersecting
+        // with a node matching the nodemask, only. Note that, to do the
+        // intersection computation, a valid view must be assigned as well.
+        // Set to 0xffffffff to enable clicking on "any node" or 0 to disable
+        // intersection check
+        void setTraversalMask(osg::Node::NodeMask nodeMask) { traversalMask_ = nodeMask; }
+        osg::Node::NodeMask getTraversalMask() { return traversalMask_; }
+
+        // Assign a view to do the intersections for click emulation
+        void setView(osgViewer::View* view) { view_ = view; }
+        osgViewer::View* getView() { return view_; }
+
+        bool hasIntersections(osgLeap::Pointer* p);
+        bool allowedToClick(osgLeap::Pointer* p);
+
+    private:
+        osg::Node::NodeMask traversalMask_;
+        ClickMode clickMode_;
+        EmulationMode emulationMode_;
+        int referenceTime_;
+        osg::ref_ptr<PointerPositionListener> intersectionController_;
+        osgViewer::View* view_;
+
+        void update();
+    };
+
+} // namespace osgLeap
+
+#endif // OSGLEAP_POINTEREVENTDEVICE_
