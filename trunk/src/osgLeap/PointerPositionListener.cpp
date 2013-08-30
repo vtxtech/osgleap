@@ -8,7 +8,7 @@
 *
 */
 
-#include <osgLeap/IntersectionController>
+#include <osgLeap/PointerPositionListener>
 
 //-- Project --//
 #include <osgLeap/Controller>
@@ -23,26 +23,26 @@
 
 namespace osgLeap {
 
-    IntersectionController::IntersectionController(int windowwidth, int windowheight): osgLeap::Listener(),
+    PointerPositionListener::PointerPositionListener(int windowwidth, int windowheight): osgLeap::Listener(),
         frame_(Leap::Frame()), lastFrame_(Leap::Frame()), camera_(NULL),
         gestures_(Leap::GestureList())
     {
         osgLeap::Controller::instance()->addListener(*this);
     }
 
-     IntersectionController::IntersectionController(osg::Camera* camera): camera_(camera),
+     PointerPositionListener::PointerPositionListener(osg::Camera* camera): camera_(camera),
             windowwidth_(800), windowheight_(600), frame_(Leap::Frame()), lastFrame_(Leap::Frame()),
             gestures_(Leap::GestureList())
     {
         osgLeap::Controller::instance()->addListener(*this);
     }
 
-    IntersectionController::~IntersectionController()
+    PointerPositionListener::~PointerPositionListener()
     {
         osgLeap::Controller::instance()->removeListener(*this);
     }
 
-    IntersectionController::IntersectionController(const IntersectionController& lm,
+    PointerPositionListener::PointerPositionListener(const PointerPositionListener& lm,
         const osg::CopyOp& copyOp): osgLeap::Listener(*this),
         frame_(Leap::Frame()),
         lastFrame_(Leap::Frame()),
@@ -54,13 +54,13 @@ namespace osgLeap {
 
     }
 
-    void IntersectionController::setResolution(int windowwidth, int windowheight)
+    void PointerPositionListener::setResolution(int windowwidth, int windowheight)
     {
         windowwidth_ = windowwidth;
         windowheight_ = windowheight;
     }
 
-    void IntersectionController::onFrame(const Leap::Controller& controller)
+    void PointerPositionListener::onFrame(const Leap::Controller& controller)
     {
         // Get the most recent frame and store it to later use in handle(...)
         frame_ = controller.frame();
@@ -69,14 +69,14 @@ namespace osgLeap {
         screen_ = controller.locatedScreens()[0];
     }
 
-    void IntersectionController::update()
+    void PointerPositionListener::update()
     {
         Leap::PointableList pl = frame_.pointables();
         Leap::Screen screen = screen_;
         gestures_ = frame_.gestures(lastFrame_);
 
         // Auto-update to reference camera's resolution
-        // Please use setResolution to update manually, if this IntersectionController
+        // Please use setResolution to update manually, if this PointerPositionListener
         // is constructed without reference camera.
         if (camera_ != NULL) {
             windowheight_ = camera_->getGraphicsContext()->getTraits()->height;
@@ -127,6 +127,7 @@ namespace osgLeap {
         for (std::list<int>::const_iterator itr = unusedIDs.begin(); itr != unusedIDs.end(); ++itr) {
             PointerMap::const_iterator pitr  = pointers_.find(*itr);
             if (pitr != pointers_.end()) {
+                removedPointers_.insert(PointerPair((*pitr).first, (*pitr).second));
                 pointers_.erase(pitr);
             }
         }

@@ -7,6 +7,8 @@ ENDIF(OSGLEAP_BUILD_SHARED_LIBS)
 FIND_PACKAGE(osg)
 FIND_PACKAGE(osgDB)
 FIND_PACKAGE(osgGA)
+FIND_PACKAGE(osgUtil)
+FIND_PACKAGE(osgViewer)
 FIND_PACKAGE(OpenThreads)
 FIND_PACKAGE(LeapSDK)
 
@@ -22,20 +24,21 @@ SET(TARGET_H
     ${HEADER_PATH}/Export
 	${HEADER_PATH}/HandState
 	${HEADER_PATH}/HUDCamera
-	${HEADER_PATH}/IntersectionController
-	${HEADER_PATH}/IntersectionDevice
-	${HEADER_PATH}/IntersectionUpdateCallback
+	${HEADER_PATH}/PointerPositionListener
+	${HEADER_PATH}/PointerGraphicsUpdateCallback
 	${HEADER_PATH}/Listener
 	${HEADER_PATH}/OrbitManipulator
+	${HEADER_PATH}/Pointer
+	${HEADER_PATH}/PointerEventDevice
 )
 
 SET(TARGET_SRC
 	Controller.cpp
 	HandState.cpp
 	HUDCamera.cpp
-	IntersectionController.cpp
-	IntersectionDevice.cpp
-	IntersectionUpdateCallback.cpp
+	PointerPositionListener.cpp
+	PointerEventDevice.cpp
+	PointerGraphicsUpdateCallback.cpp
     OrbitManipulator.cpp
 )
 
@@ -44,6 +47,8 @@ SET(TARGET_LIBRARIES_VARS
 	OSG_LIBRARY
 	OSGDB_LIBRARY
 	OSGGA_LIBRARY
+	OSGUTIL_LIBRARY
+	OSGVIEWER_LIBRARY
 	OPENTHREADS_LIBRARY
 )
 

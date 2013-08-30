@@ -23,7 +23,7 @@
 namespace osgLeap {
 
     // Workaround for LeapSDK 0.8.0 or lower which do not include stabilizedPalmPosition
-    // ToDo: Detect version of LeapSDK instead
+    // ToDo/j.scholz: Detect version of LeapSDK instead
     Leap::Vector getPalmPosition(const Leap::Hand& hand) {
 #ifdef LEAPSDK_080_COMPATIBILITYMODE
         return hand.palmPosition();

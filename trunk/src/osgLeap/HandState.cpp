@@ -142,7 +142,7 @@ namespace osgLeap {
         const osg::CopyOp& copyOp): osg::Geode(*this), Leap::Listener(*this),
         frame_(Leap::Frame())
     {
-        // ToDo: Copy texture2d member variables (lhTex_, rhTex_) correctly...
+        // ToDo/j.scholz: Copy texture2d member variables (lhTex_, rhTex_) correctly...
     }
 
     void HandState::onFrame(const Leap::Controller& controller)

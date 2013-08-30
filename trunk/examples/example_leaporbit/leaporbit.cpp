@@ -28,7 +28,7 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
-#include <osgLeap/IntersectionController>
+#include <osgLeap/PointerPositionListener>
 #include <osgLeap/HandState>
 #include <osgLeap/HUDCamera>
 

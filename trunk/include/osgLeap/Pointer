@@ -8,19 +8,14 @@
 *
 */
 
-#ifndef OSGLEAP_INTERSECTIONCONTROLLER_
-#define OSGLEAP_INTERSECTIONCONTROLLER_ 1
+#ifndef OSGLEAP_POINTER_
+#define OSGLEAP_POINTER_ 1
 
 //-- Project --//
 #include <osgLeap/Export>
-#include <osgLeap/Listener>
 
-//-- Leap --//
-#include <Leap.h>
-
-//-- OSG --//
-#include <osg/Camera>
-#include <osg/Object>
+//-- OSG: osg --//
+#include <osg/Referenced>
 #include <osg/Timer>
 #include <osg/Vec2>
 
@@ -34,8 +29,11 @@ namespace osgLeap {
     class OSGLEAP_EXPORT Pointer: public osg::Referenced {
     public:
         Pointer(const osg::Vec2& position, int pointableID): position_(position),
+            lastPosition_(osg::Vec2(0.0f, 0.0f)),
             pointableID_(pointableID),
-            deltaMax_(20.0f) {
+            deltaMax_(20.0f),
+            isNew_(true)
+        {
             setTimedPosition(position.x(), position.y());
         }
 
@@ -46,9 +44,18 @@ namespace osgLeap {
             if (time_ == 0 || ((pos - timedPosition_).length() > deltaMax_)) {
                 setTimedPosition(pos);
             }
+            lastPosition_ = position_;
             position_ = pos;
+            isNew_ = false;
         }
         void setPosition(float x, float y) { setPosition(osg::Vec2(x, y)); }
+
+        bool hasMoved() {
+            return (lastPosition_ != position_);
+        }
+        bool isNew() {
+            return isNew_;
+        }
 
         void setTimedPosition(const osg::Vec2& pos) { timedPosition_ = pos; time_ = osg::Timer::instance()->tick(); }
         void setTimedPosition(float x, float y) {  setTimedPosition(osg::Vec2(x, y)); }
@@ -83,67 +90,16 @@ namespace osgLeap {
         osg::Timer_t time_;
         osg::Vec2 timedPosition_;
         float deltaMax_;
+        bool isNew_;
         
         osg::Vec2 position_;
+        osg::Vec2 lastPosition_;
         int pointableID_;
     };
 
     typedef std::map<int, osg::ref_ptr<Pointer> > PointerMap;
     typedef std::pair<int, osg::ref_ptr<Pointer> > PointerPair;
 
-    // A class that supports calculation of screen intersections
-    class OSGLEAP_EXPORT IntersectionController: public osgLeap::Listener
-    {
-    public:
-        // Parameter-constructor with fixed screen resolution
-        // Use setResolution to update during runtime
-        IntersectionController(int windowwidth = 640, int windowheight = 480);
-
-        // Parameter-constructor with auto-update to screen resolution
-        IntersectionController(osg::Camera* camera);
-
-        // Copy constructor
-        IntersectionController(const IntersectionController& lm,
-            const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
-
-        // Virtual destructor
-        virtual ~IntersectionController();
-
-        META_Object( osgLeap, IntersectionController );
-        
-        // Updates the current reference resolution to calculate actual
-        // pointer position from Leap Motion's relative position values
-        // (Leap reports values from 0.0 to 1.0 for both axes, but we
-        //  need absolute pixel coordinates here)
-        //
-        // NOTE: Setting resolution has no effect, if
-        // IntersectionUpdateCallback was constructed with an osg::Camera
-        // as reference.
-        void setResolution(int windowwidth, int windowheight);
-
-        // Called by Leap::Controller asynchronously
-        virtual void onFrame(const Leap::Controller&);
-
-        // Call this during update cycle to update PointerMap
-        virtual void update();
-
-        PointerMap getPointers() { return pointers_; }
-        const PointerMap& getPointers() const { return pointers_; }
-
-        const Leap::GestureList& getGestures() const { return gestures_; }
-
-    protected:
-        osg::ref_ptr<osg::Camera> camera_;
-        float windowheight_;
-        float windowwidth_;
-
-        Leap::Frame frame_;
-        Leap::Frame lastFrame_;
-        Leap::Screen screen_;
-        Leap::GestureList gestures_;
-        PointerMap pointers_;
-    };
-
 } /* namespace osgLeap */
 
-#endif /* OSGLEAP_INTERSECTIONCONTROLLER_ */
+#endif /* OSGLEAP_POINTER_ */

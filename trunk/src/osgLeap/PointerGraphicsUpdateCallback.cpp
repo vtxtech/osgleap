@@ -8,7 +8,7 @@
 *
 */
 
-#include <osgLeap/IntersectionUpdateCallback>
+#include <osgLeap/PointerGraphicsUpdateCallback>
 
 //-- OSG: osg --//
 #include <osg/io_utils>
@@ -19,7 +19,7 @@
 
 namespace osgLeap {
 
-    osg::ref_ptr<osg::Node> IntersectionUpdateCallback::createPointerGeode() {
+    osg::ref_ptr<osg::Node> PointerGraphicsUpdateCallback::createPointerGeode() {
         osg::ref_ptr<osg::Geode> sphere = new osg::Geode();
         float radius = 10.0f;
         osg::TessellationHints* hints = new osg::TessellationHints();
@@ -30,7 +30,7 @@ namespace osgLeap {
         return sphere;
     }
 
-    osg::Vec4 IntersectionUpdateCallback::getColor() {
+    osg::Vec4 PointerGraphicsUpdateCallback::getColor() {
         osg::Vec4 result;
 
         switch (colorIndex_) {
@@ -75,7 +75,7 @@ namespace osgLeap {
         return result;
     }
 
-    void osgLeap::IntersectionUpdateCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
+    void osgLeap::PointerGraphicsUpdateCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
     {
         // Grab data from Leap Motion
         intersectionController_->update();
