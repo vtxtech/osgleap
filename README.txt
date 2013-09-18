@@ -4,16 +4,35 @@
 # -----------------------------------------------------------------------------
 #
 # -----------------------------------------------------------------------------
-# Change Notes osgLeap v.0.1.3
+# Change Notes osgLeap v.0.3.0
 # ------------------------------
+#
+# * Introduced osgLeap::PointerEventDevice to generate native OpenSceneGraph
+#     events from your Leap Motion actions. As the name suggests this class
+#     focuses on generating (or 'emulating') 2D mouse or touch events for all
+#     fingers detected pointing at the screen. PointerEventDevice supports
+#     two modes for click emulation or may be deactivated:
+#      1) Time-based (e.g. if pointer is standing still for 5 seconds, however
+#         the actual trigger time can be defined by the user)
+#      2) Screentap (fires a mouse or touch event if the Leap 'Screentap'
+#         gesture is done)
+#     PointerEventDevice may be configured to fire either mouse or touch events
+#     however the touch emulation is to be considered experimental. Feedback on
+#     the touch emulation mode is greatly appreciated.
+#     To test PointerEventDevice run the leappointer example.
 #
 # * Added osgLeap::HandState visualizer to give the user a hint on what the Leap
 #     Device is currently seeing. 
+#
 # * Introduced osgLeap::UpdateCallback for visualization of the positions you
 #     are pointing at. Refer to example_leappointer for usage examples.
+#
 # * Renamed osgLeap::LeapManipulator to osgLeap::OrbitManipulator. This is done
 #     in order to avoid naming issues with future additional manipulators.
+#
 # * Renamed example_leapdemo to example_leaporbit
+#
+# * Introduced osgLeap::HUDCamera class to simplify examples
 #
 # -----------------------------------------------------------------------------
 # Change Notes osgLeap v.0.1.2
