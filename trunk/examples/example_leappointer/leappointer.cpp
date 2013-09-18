@@ -68,7 +68,7 @@ int main(int argc, char** argv)
     arguments.getApplicationUsage()->addCommandLineOption("--mouse", "While moving pointer send mouse motion events. Clicks are sent as mouse clicks.");
     arguments.getApplicationUsage()->addCommandLineOption("--touch", "While moving pointer send touch move events. Clicks are sent as touch taps.");
 
-    osgViewer::Viewer viewer(arguments);
+    osgViewer::Viewer viewer;
 
     unsigned int helpType = 0;
     if ((helpType = arguments.readHelpType()))
