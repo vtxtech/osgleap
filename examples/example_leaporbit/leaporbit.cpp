@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     arguments.getApplicationUsage()->addCommandLineOption("--singlehanded", "Initialize the OrbitManipulator in simple one-handed mode (rotate+zoom) without panning.");
     arguments.getApplicationUsage()->addCommandLineOption("--trackball", "Initialize the OrbitManipulator in trackball one-handed mode. Imagine to hold a basketball in your hand palm down (pan+rotate+zoom).");
 
-    osgViewer::Viewer viewer(arguments);
+    osgViewer::Viewer viewer;
 
     unsigned int helpType = 0;
     if ((helpType = arguments.readHelpType()))

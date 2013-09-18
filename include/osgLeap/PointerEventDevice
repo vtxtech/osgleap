@@ -33,8 +33,8 @@ namespace osgLeap {
         };
 
         enum EmulationMode {
-            MOUSE,
-            TOUCH
+            MOUSE = 0,
+            TOUCH = 1 // Experimental!
         };
 
         // Parameter-constructor with auto-update to screen resolution
