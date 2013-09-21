@@ -28,8 +28,9 @@ namespace osgLeap {
     // finger or tool pointing at the screen
     class OSGLEAP_EXPORT Pointer: public osg::Referenced {
     public:
-        Pointer(const osg::Vec2& position, int pointableID): position_(position),
+        Pointer(const osg::Vec2& position, const osg::Vec2& resolution, int pointableID): position_(position),
             lastPosition_(osg::Vec2(0.0f, 0.0f)),
+            resolution_(resolution),
             pointableID_(pointableID),
             deltaMax_(20.0f),
             isNew_(true)
@@ -40,6 +41,8 @@ namespace osgLeap {
         const osg::Vec2& getPosition() const { return position_; }
         osg::Vec2 getPosition() { return position_; }
 
+        osg::Vec2 getRelativePosition() { return osg::Vec2(position_.x()/resolution_.x(), position_.y()/resolution_.y()); }
+
         void setPosition(const osg::Vec2& pos) {
             if (time_ == 0 || ((pos - timedPosition_).length() > deltaMax_)) {
                 setTimedPosition(pos);
@@ -49,6 +52,14 @@ namespace osgLeap {
             isNew_ = false;
         }
         void setPosition(float x, float y) { setPosition(osg::Vec2(x, y)); }
+
+        const osg::Vec2& getResolution() const { return resolution_; }
+        osg::Vec2 getResolution() { return resolution_; }
+
+        void setResolution(const osg::Vec2& resolution) {
+            resolution_ = resolution;
+        }
+        void setResolution(float x, float y) { setResolution(osg::Vec2(x, y)); }
 
         bool hasMoved() {
             return (lastPosition_ != position_);
@@ -95,6 +106,8 @@ namespace osgLeap {
         osg::Vec2 position_;
         osg::Vec2 lastPosition_;
         int pointableID_;
+
+        osg::Vec2 resolution_;
     };
 
     typedef std::map<int, osg::ref_ptr<Pointer> > PointerMap;
