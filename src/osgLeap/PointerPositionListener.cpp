@@ -82,6 +82,7 @@ namespace osgLeap {
             windowheight_ = camera_->getGraphicsContext()->getTraits()->height;
             windowwidth_  = camera_->getGraphicsContext()->getTraits()->width;
         }
+        osg::Vec2 resolution(windowwidth_, windowheight_);
 
         // Update pointers as required. Add new pointers where additional pointables
         // result in a valid intersection.
@@ -100,11 +101,12 @@ namespace osgLeap {
             validIDs.push_back((*itr).id());
             if (pointer == pointers_.end()) {
                 // Not found: Add a new pointer
-                osg::ref_ptr<Pointer> newPointer = new Pointer(osg::Vec2(pos.x, pos.y), (*itr).id());
+                osg::ref_ptr<Pointer> newPointer = new Pointer(osg::Vec2(pos.x, pos.y), resolution, (*itr).id());
                 pointers_.insert(PointerPair((*itr).id(), newPointer));
             } else {
                 // Found: Update pointer position
                 pointer->second->setPosition(pos.x, pos.y);
+                pointer->second->setResolution(resolution);
             }
         }
 
