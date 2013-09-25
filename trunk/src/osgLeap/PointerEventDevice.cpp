@@ -1,6 +1,6 @@
 /*
 * Library osgLeap
-* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
 *
 * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
 * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,55 +51,119 @@ namespace osgLeap {
         return (getView() == NULL || getTraversalMask() == 0 || hasIntersections(p));
     }
 
+    osg::ref_ptr<osgGA::GUIEventAdapter> PointerEventDevice::makeMouseEvent(osgLeap::Pointer* p)
+    {
+        osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
+        OSG_NOTICE<<"x="<<pos.x()<<", y="<<pos.y()<<std::endl;
+        //OSG_NOTICE<<"Resolution: "<<p->getResolution().x()<<" / "<<p->getResolution().y()<<std::endl;
+        osg::ref_ptr<osgGA::GUIEventAdapter> e = new osgGA::GUIEventAdapter(*osgGA::GUIEventAdapter::getAccumulatedEventState());
+        e->setX(pos.x());
+        e->setY(pos.y());
+        e->setTime(_eventQueue->getTime());
+        e->setWindowWidth(p->getResolution().x());
+        e->setWindowHeight(p->getResolution().y());
+        e->setMouseYOrientation(osgGA::GUIEventAdapter::Y_INCREASING_UPWARDS);
+        return e;
+    }
+
+    osgGA::GUIEventAdapter* PointerEventDevice::mouseMotion(osgLeap::Pointer* p)
+    {
+        osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
+        e->setEventType(e->getButtonMask() ? osgGA::GUIEventAdapter::DRAG : osgGA::GUIEventAdapter::MOVE);
+        _eventQueue->addEvent(e);
+        return e;
+    }
+
+    osgGA::GUIEventAdapter* PointerEventDevice::mouseButtonPress(osgLeap::Pointer* p)
+    {
+        OSG_NOTICE<<"mouse press @ "<<p->getPosition()<<std::endl;
+        //_eventQueue->mouseButtonPress(p->getPosition().x(), p->getPosition().y(), 1);
+        osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
+        e->setButtonMask(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
+        e->setEventType(osgGA::GUIEventAdapter::PUSH);
+        e->setButton(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
+        _eventQueue->addEvent(e);
+        return e;
+    }
+
+    osgGA::GUIEventAdapter* PointerEventDevice::mouseButtonRelease(osgLeap::Pointer* p)
+    {
+        OSG_NOTICE<<"mouse release @ "<<p->getPosition()<<std::endl;
+        //_eventQueue->mouseButtonRelease(p->getPosition().x(), p->getPosition().y(), 1);
+        osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
+        e->setButtonMask(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
+        e->setEventType(osgGA::GUIEventAdapter::RELEASE);
+        e->setButton(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
+        _eventQueue->addEvent(e);
+        return e;
+    }
+
+    osgGA::GUIEventAdapter* PointerEventDevice::touchBegan(osgLeap::Pointer* p)
+    {
+        osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
+        osgGA::GUIEventAdapter* e = _eventQueue->touchBegan(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_BEGAN, pos.x(), pos.y());
+        e->setWindowWidth(p->getResolution().x());
+        e->setWindowHeight(p->getResolution().y());
+        return e;
+    }
+
+    osgGA::GUIEventAdapter* PointerEventDevice::touchMoved(osgLeap::Pointer* p)
+    {
+        osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
+        osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_MOVED, pos.x(), pos.y());
+        e->setWindowWidth(p->getResolution().x());
+        e->setWindowHeight(p->getResolution().y());
+        return e;
+    }
+
+    osgGA::GUIEventAdapter* PointerEventDevice::touchEnded(osgLeap::Pointer* p, unsigned int taps)
+    {
+        osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
+        osgGA::GUIEventAdapter* e = _eventQueue->touchEnded(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_ENDED, pos.x(), pos.y(), taps);
+        e->setWindowWidth(p->getResolution().x());
+        e->setWindowHeight(p->getResolution().y());
+        return e;
+    }
+
+    osgGA::GUIEventAdapter* PointerEventDevice::touchStationary(osgLeap::Pointer* p)
+    {
+        osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
+        osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_STATIONERY, pos.x(), pos.y());
+        e->setWindowWidth(p->getResolution().x());
+        e->setWindowHeight(p->getResolution().y());
+        return e;
+    }
+
+
     void PointerEventDevice::update()
     {
         intersectionController_->update();
 
         PointerMap removedPointers = intersectionController_->getRemovedPointers();
         for (PointerMap::iterator itr = removedPointers.begin(); itr != removedPointers.end(); ++itr) {
-            // ToDo/j.scholz: No tapping here. Could it be useful to simulate somehow?
-            osgGA::GUIEventAdapter* e = _eventQueue->touchEnded(itr->first, osgGA::GUIEventAdapter::TouchPhase::TOUCH_ENDED, itr->second->getPosition().x(), itr->second->getPosition().y(), 0);
+            touchEnded(itr->second, 0);
         }
 
         PointerMap pointers = intersectionController_->getPointers();
         for (PointerMap::iterator itr = pointers.begin(); itr != pointers.end(); ++itr) {
             if (emulationMode_ == MOUSE) {
                 if (itr->second->hasMoved()) {
-                    float x = (2*itr->second->getRelativePosition().x())-1;
-                    float y = (2*itr->second->getRelativePosition().y())-1;
-                    OSG_NOTICE<<"x="<<x<<", y="<<y<<std::endl;
-                    OSG_NOTICE<<"Resolution: "<<itr->second->getResolution().x()<<" / "<<itr->second->getResolution().y()<<std::endl;
-                    //_eventQueue->mouseMotion(x, y);
-                    osgGA::GUIEventAdapter* e = new osgGA::GUIEventAdapter(*osgGA::GUIEventAdapter::getAccumulatedEventState());
-                    e->setX(x);
-                    e->setY(y);
-                    e->setEventType(e->getButtonMask() ? osgGA::GUIEventAdapter::DRAG : osgGA::GUIEventAdapter::MOVE);
-                    e->setTime(_eventQueue->getTime());
-                    e->setWindowWidth(itr->second->getResolution().x());
-                    e->setWindowHeight(itr->second->getResolution().y());
-                    e->setMouseYOrientation(osgGA::GUIEventAdapter::Y_INCREASING_UPWARDS);
-                    _eventQueue->addEvent(e);
+                    mouseMotion(itr->second);
                 }
             } else if (emulationMode_ == TOUCH) {
                 if (itr->second->isNew()) {
-                    osgGA::GUIEventAdapter* e = _eventQueue->touchBegan(itr->first, osgGA::GUIEventAdapter::TouchPhase::TOUCH_BEGAN, itr->second->getPosition().x(), itr->second->getPosition().y());
-                    e->setWindowWidth(itr->second->getResolution().x());
-                    e->setWindowHeight(itr->second->getResolution().y());
+                    touchBegan(itr->second);
                 } else if (itr->second->hasMoved()) {
-                    osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(itr->first, osgGA::GUIEventAdapter::TouchPhase::TOUCH_MOVED, itr->second->getPosition().x(), itr->second->getPosition().y());
-                    e->setWindowWidth(itr->second->getResolution().x());
-                    e->setWindowHeight(itr->second->getResolution().y());
+                    touchMoved(itr->second);
                 } else {
-                    osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(itr->first, osgGA::GUIEventAdapter::TouchPhase::TOUCH_STATIONERY, itr->second->getPosition().x(), itr->second->getPosition().y());
-                    e->setWindowWidth(itr->second->getResolution().x());
-                    e->setWindowHeight(itr->second->getResolution().y());
+                    touchStationary(itr->second);
                 }
             }
 
             bool doClick = false;
             if (clickMode_ == TIMEBASED_MOUSECLICK) {
                 if (allowedToClick(itr->second)) {
-                    // ToDo/j.scholz: Set time to zero as long as there is no appropriate intersection
+                    // ToDo/j.kroeger: Set time to zero as long as there is no appropriate intersection
                     if (itr->second->clickTimeHasElapsed(referenceTime_)) doClick = true;
                 }
             } else if (clickMode_ == SCREENTAP) {
@@ -127,18 +191,12 @@ namespace osgLeap {
             if (doClick) {
                 if (emulationMode_ == MOUSE) {
                     // Fire a mouse press and a mouse release event on "left mouse button"
-                    OSG_NOTICE<<"CLICK @ "<<itr->second->getPosition()<<std::endl;
-                    _eventQueue->mouseButtonPress(itr->second->getPosition().x(), itr->second->getPosition().y(), 1);
-                    _eventQueue->mouseButtonRelease(itr->second->getPosition().x(), itr->second->getPosition().y(), 1);
+                    mouseButtonPress(itr->second);
+                    mouseButtonRelease(itr->second);
                 } else if (emulationMode_ == TOUCH) {
                     // Fire a touch began and a touch ended event with 1 tap
-                    OSG_NOTICE<<"TOUCH TAP @ "<<itr->second->getPosition()<<std::endl;
-                    osgGA::GUIEventAdapter* e1 = _eventQueue->touchBegan(itr->first, osgGA::GUIEventAdapter::TouchPhase::TOUCH_BEGAN, itr->second->getPosition().x(), itr->second->getPosition().y());
-                    e1->setWindowWidth(itr->second->getResolution().x());
-                    e1->setWindowHeight(itr->second->getResolution().y());
-                    osgGA::GUIEventAdapter* e2 = _eventQueue->touchEnded(itr->first, osgGA::GUIEventAdapter::TouchPhase::TOUCH_ENDED, itr->second->getPosition().x(), itr->second->getPosition().y(), 1);
-                    e2->setWindowWidth(itr->second->getResolution().x());
-                    e2->setWindowHeight(itr->second->getResolution().y());
+                    touchBegan(itr->second);
+                    touchEnded(itr->second, 1);
                 }
             }
         }

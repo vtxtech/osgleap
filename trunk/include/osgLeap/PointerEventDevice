@@ -1,6 +1,6 @@
 /*
 * Library osgLeap
-* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
 *
 * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
 * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -93,6 +93,16 @@ namespace osgLeap {
         osgViewer::View* view_;
 
         void update();
+
+        osg::ref_ptr<osgGA::GUIEventAdapter> makeMouseEvent(osgLeap::Pointer* p);
+        osgGA::GUIEventAdapter* mouseMotion(osgLeap::Pointer* p);
+        osgGA::GUIEventAdapter* mouseButtonPress(osgLeap::Pointer* p);
+        osgGA::GUIEventAdapter* mouseButtonRelease(osgLeap::Pointer* p);
+
+        osgGA::GUIEventAdapter* touchBegan(osgLeap::Pointer* p);
+        osgGA::GUIEventAdapter* touchMoved(osgLeap::Pointer* p);
+        osgGA::GUIEventAdapter* touchStationary(osgLeap::Pointer* p);
+        osgGA::GUIEventAdapter* touchEnded(osgLeap::Pointer* p, unsigned int taps);
     };
 
 } // namespace osgLeap

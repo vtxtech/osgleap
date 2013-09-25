@@ -1,6 +1,6 @@
 /*
 * Library osgLeap
-* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
 *
 * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
 * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +23,7 @@
 namespace osgLeap {
 
     // Workaround for LeapSDK 0.8.0 or lower which do not include stabilizedPalmPosition
-    // ToDo/j.scholz: Detect version of LeapSDK instead
+    // ToDo/j.kroeger: Detect version of LeapSDK instead
     Leap::Vector getPalmPosition(const Leap::Hand& hand) {
 #ifdef LEAPSDK_080_COMPATIBILITYMODE
         return hand.palmPosition();

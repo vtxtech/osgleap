@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # osgLeap is released under the GNU LESSER GENERAL PUBLIC LICENSE v3.0.
-# Created by Johannes Scholz (vtxtech)
+# Created by Johannes Kroeger (vtxtech)
 # -----------------------------------------------------------------------------
 #
 # -----------------------------------------------------------------------------

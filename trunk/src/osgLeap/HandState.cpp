@@ -1,6 +1,6 @@
 /*
 * Library osgLeap
-* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
 *
 * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
 * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -142,7 +142,7 @@ namespace osgLeap {
         const osg::CopyOp& copyOp): osg::Geode(*this), Leap::Listener(*this),
         frame_(Leap::Frame())
     {
-        // ToDo/j.scholz: Copy texture2d member variables (lhTex_, rhTex_) correctly...
+        // ToDo/j.kroeger: Copy texture2d member variables (lhTex_, rhTex_) correctly...
     }
 
     void HandState::onFrame(const Leap::Controller& controller)
