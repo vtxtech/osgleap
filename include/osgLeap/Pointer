@@ -1,6 +1,6 @@
 /*
 * Library osgLeap
-* Copyright (C) 2013 Johannes Scholz/vtxtech. All rights reserved.
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
 *
 * This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
 * but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -41,7 +41,13 @@ namespace osgLeap {
         const osg::Vec2& getPosition() const { return position_; }
         osg::Vec2 getPosition() { return position_; }
 
-        osg::Vec2 getRelativePosition() { return osg::Vec2(position_.x()/resolution_.x(), position_.y()/resolution_.y()); }
+        osg::Vec2 getRelativePosition() const { return osg::Vec2(position_.x()/resolution_.x(), position_.y()/resolution_.y()); }
+        osg::Vec2 getRelativePositionInScreenCoordinates() const {
+            osg::Vec2 rel = getRelativePosition();
+            float x = (2*rel.x())-1;
+            float y = (2*rel.y())-1;
+            return osg::Vec2(x, y);
+        }
 
         void setPosition(const osg::Vec2& pos) {
             if (time_ == 0 || ((pos - timedPosition_).length() > deltaMax_)) {
