@@ -29,6 +29,8 @@ namespace osgLeap {
     class OSGLEAP_EXPORT Pointer: public osg::Referenced {
     public:
         Pointer(const osg::Vec2& position, const osg::Vec2& resolution, int pointableID): position_(position),
+            relativePosition_(osg::Vec2(0.0f, 0.0f)),
+            relativePositionInScreenCoordinates_(osg::Vec2(0.0f, 0.0f)),
             lastPosition_(osg::Vec2(0.0f, 0.0f)),
             resolution_(resolution),
             pointableID_(pointableID),
@@ -38,29 +40,34 @@ namespace osgLeap {
             setTimedPosition(position.x(), position.y());
         }
 
-        const osg::Vec2& getPosition() const { return position_; }
         osg::Vec2 getPosition() { return position_; }
+        const osg::Vec2& getPosition() const { return position_; }
 
-        osg::Vec2 getRelativePosition() const { return osg::Vec2(position_.x()/resolution_.x(), position_.y()/resolution_.y()); }
-        osg::Vec2 getRelativePositionInScreenCoordinates() const {
-            osg::Vec2 rel = getRelativePosition();
-            float x = (2*rel.x())-1;
-            float y = (2*rel.y())-1;
-            return osg::Vec2(x, y);
+        osg::Vec2 getRelativePosition() { return relativePosition_; }
+        const osg::Vec2& getRelativePosition() const { return relativePosition_; }
+
+        osg::Vec2 getRelativePositionInScreenCoordinates() {
+            return relativePositionInScreenCoordinates_;
+        }
+        const osg::Vec2& getRelativePositionInScreenCoordinates() const {
+            return relativePositionInScreenCoordinates_;
         }
 
         void setPosition(const osg::Vec2& pos) {
             if (time_ == 0 || ((pos - timedPosition_).length() > deltaMax_)) {
                 setTimedPosition(pos);
             }
+            relativePosition_ = osg::Vec2(position_.x()/resolution_.x(), position_.y()/resolution_.y());
+            relativePositionInScreenCoordinates_ = osg::Vec2((2*relativePosition_.x())-1, (2*relativePosition_.y())-1);
+
             lastPosition_ = position_;
             position_ = pos;
             isNew_ = false;
         }
         void setPosition(float x, float y) { setPosition(osg::Vec2(x, y)); }
 
-        const osg::Vec2& getResolution() const { return resolution_; }
         osg::Vec2 getResolution() { return resolution_; }
+        const osg::Vec2& getResolution() const { return resolution_; }
 
         void setResolution(const osg::Vec2& resolution) {
             resolution_ = resolution;
@@ -110,6 +117,8 @@ namespace osgLeap {
         bool isNew_;
         
         osg::Vec2 position_;
+        osg::Vec2 relativePosition_;
+        osg::Vec2 relativePositionInScreenCoordinates_;
         osg::Vec2 lastPosition_;
         int pointableID_;
 
