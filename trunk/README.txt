@@ -7,6 +7,10 @@
 # Change Notes osgLeap v.0.3.0
 # ------------------------------
 #
+# * osgLeap-0.3.0 requires at least OpenSceneGraph-3.1.4 including build of 
+#     the osgdb_png plugin to read the PNG images files for the
+#     osgLeap::HandState class
+#
 # * Introduced osgLeap::PointerEventDevice to generate native OpenSceneGraph
 #     events from your Leap Motion actions. As the name suggests this class
 #     focuses on generating (or 'emulating') 2D mouse or touch events for all
