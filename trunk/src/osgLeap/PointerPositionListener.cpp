@@ -74,6 +74,7 @@ namespace osgLeap {
         Leap::PointableList pl = frame_.pointables();
         Leap::Screen screen = screen_;
         gestures_ = frame_.gestures(lastFrame_);
+        removedPointers_.clear();
 
         // Auto-update to reference camera's resolution
         // Please use setResolution to update manually, if this PointerPositionListener

@@ -54,7 +54,7 @@ namespace osgLeap {
     osg::ref_ptr<osgGA::GUIEventAdapter> PointerEventDevice::makeMouseEvent(osgLeap::Pointer* p)
     {
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
-        OSG_NOTICE<<"x="<<pos.x()<<", y="<<pos.y()<<std::endl;
+        //OSG_NOTICE<<"x="<<pos.x()<<", y="<<pos.y()<<std::endl;
         //OSG_NOTICE<<"Resolution: "<<p->getResolution().x()<<" / "<<p->getResolution().y()<<std::endl;
         osg::ref_ptr<osgGA::GUIEventAdapter> e = new osgGA::GUIEventAdapter(*osgGA::GUIEventAdapter::getAccumulatedEventState());
         e->setX(pos.x());
@@ -68,6 +68,7 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::mouseMotion(osgLeap::Pointer* p)
     {
+        OSG_DEBUG_FP<<"mouseMotion: "<<p->getPosition()<<std::endl;
         osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
         e->setEventType(e->getButtonMask() ? osgGA::GUIEventAdapter::DRAG : osgGA::GUIEventAdapter::MOVE);
         _eventQueue->addEvent(e);
@@ -76,7 +77,7 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::mouseButtonPress(osgLeap::Pointer* p)
     {
-        OSG_NOTICE<<"mouse press @ "<<p->getPosition()<<std::endl;
+        OSG_DEBUG<<"mouseButtonPress: "<<p->getPosition()<<std::endl;
         //_eventQueue->mouseButtonPress(p->getPosition().x(), p->getPosition().y(), 1);
         osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
         e->setButtonMask(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
@@ -88,7 +89,7 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::mouseButtonRelease(osgLeap::Pointer* p)
     {
-        OSG_NOTICE<<"mouse release @ "<<p->getPosition()<<std::endl;
+        OSG_DEBUG<<"mouseButtonRelease: "<<p->getPosition()<<std::endl;
         //_eventQueue->mouseButtonRelease(p->getPosition().x(), p->getPosition().y(), 1);
         osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
         e->setButtonMask(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
@@ -100,6 +101,7 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::touchBegan(osgLeap::Pointer* p)
     {
+        OSG_DEBUG<<"touchBegan: "<<p->getPointableID()<<std::endl;
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
         osgGA::GUIEventAdapter* e = _eventQueue->touchBegan(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_BEGAN, pos.x(), pos.y());
         e->setWindowWidth(p->getResolution().x());
@@ -109,6 +111,7 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::touchMoved(osgLeap::Pointer* p)
     {
+        OSG_DEBUG_FP<<"touchMoved: "<<p->getPosition()<<std::endl;
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
         osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_MOVED, pos.x(), pos.y());
         e->setWindowWidth(p->getResolution().x());
@@ -118,6 +121,7 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::touchEnded(osgLeap::Pointer* p, unsigned int taps)
     {
+        OSG_DEBUG<<"touchEnded: "<<p->getPointableID()<<std::endl;
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
         osgGA::GUIEventAdapter* e = _eventQueue->touchEnded(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_ENDED, pos.x(), pos.y(), taps);
         e->setWindowWidth(p->getResolution().x());
