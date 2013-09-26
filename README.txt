@@ -17,15 +17,16 @@
 #      2) Screentap (fires a mouse or touch event if the Leap 'Screentap'
 #         gesture is done)
 #     PointerEventDevice may be configured to fire either mouse or touch events
-#     however the touch emulation is to be considered experimental. Feedback on
-#     the touch emulation mode is greatly appreciated.
+#     however the touch emulation is to be considered experimental.
 #     To test PointerEventDevice run the leappointer example.
+#
+#     Feedback on the touch emulation mode is greatly appreciated.
 #
 # * Added osgLeap::HandState visualizer to give the user a hint on what the Leap
 #     Device is currently seeing. 
 #
-# * Introduced osgLeap::UpdateCallback for visualization of the positions you
-#     are pointing at. Refer to example_leappointer for usage examples.
+# * Introduced osgLeap::PointerGraphicsUpdateCallback for visualization of the
+#     positions you are pointing at. Refer to example_leappointer on how to use
 #
 # * Renamed osgLeap::LeapManipulator to osgLeap::OrbitManipulator. This is done
 #     in order to avoid naming issues with future additional manipulators.
