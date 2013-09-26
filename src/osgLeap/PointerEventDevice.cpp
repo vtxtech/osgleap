@@ -15,6 +15,7 @@
 
 //-- OSG: osgUtil --//
 #include <osgUtil/LineSegmentIntersector>
+#include <osgUtil/IntersectionVisitor>
 //-- OSG: osgGA --//
 #include <osgGA/GUIEventAdapter>
 
@@ -36,7 +37,7 @@ namespace osgLeap {
         bool hasIntersections = false;
         if (getTraversalMask() != 0 && getView() != NULL) {
             osgUtil::LineSegmentIntersector::Intersections intersections;
-            if (getView()->computeIntersections(getView()->getCamera(), osgUtil::Intersector::CoordinateFrame::VIEW, p->getPosition().x(), p->getPosition().y(), intersections, getTraversalMask())) {
+            if (getView()->computeIntersections(getView()->getCamera(), osgUtil::Intersector::VIEW, p->getPosition().x(), p->getPosition().y(), intersections, getTraversalMask())) {
                 if (intersections.size() > 0) {
                     hasIntersections = true;
                     OSG_NOTICE<<"I HAVE INTERSECTIONS"<<std::endl;
@@ -103,7 +104,7 @@ namespace osgLeap {
     {
         OSG_DEBUG<<"touchBegan: "<<p->getPointableID()<<std::endl;
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
-        osgGA::GUIEventAdapter* e = _eventQueue->touchBegan(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_BEGAN, pos.x(), pos.y());
+        osgGA::GUIEventAdapter* e = _eventQueue->touchBegan(p->getPointableID(), osgGA::GUIEventAdapter::TOUCH_BEGAN, pos.x(), pos.y());
         e->setWindowWidth(p->getResolution().x());
         e->setWindowHeight(p->getResolution().y());
         return e;
@@ -113,7 +114,7 @@ namespace osgLeap {
     {
         OSG_DEBUG_FP<<"touchMoved: "<<p->getPosition()<<std::endl;
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
-        osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_MOVED, pos.x(), pos.y());
+        osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(p->getPointableID(), osgGA::GUIEventAdapter::TOUCH_MOVED, pos.x(), pos.y());
         e->setWindowWidth(p->getResolution().x());
         e->setWindowHeight(p->getResolution().y());
         return e;
@@ -123,7 +124,7 @@ namespace osgLeap {
     {
         OSG_DEBUG<<"touchEnded: "<<p->getPointableID()<<std::endl;
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
-        osgGA::GUIEventAdapter* e = _eventQueue->touchEnded(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_ENDED, pos.x(), pos.y(), taps);
+        osgGA::GUIEventAdapter* e = _eventQueue->touchEnded(p->getPointableID(), osgGA::GUIEventAdapter::TOUCH_ENDED, pos.x(), pos.y(), taps);
         e->setWindowWidth(p->getResolution().x());
         e->setWindowHeight(p->getResolution().y());
         return e;
@@ -132,7 +133,7 @@ namespace osgLeap {
     osgGA::GUIEventAdapter* PointerEventDevice::touchStationary(osgLeap::Pointer* p)
     {
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
-        osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(p->getPointableID(), osgGA::GUIEventAdapter::TouchPhase::TOUCH_STATIONERY, pos.x(), pos.y());
+        osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(p->getPointableID(), osgGA::GUIEventAdapter::TOUCH_STATIONERY, pos.x(), pos.y());
         e->setWindowWidth(p->getResolution().x());
         e->setWindowHeight(p->getResolution().y());
         return e;

@@ -127,8 +127,8 @@ namespace osgLeap {
         }
 
         // Remove unused pointers
-        for (std::list<int>::const_iterator itr = unusedIDs.begin(); itr != unusedIDs.end(); ++itr) {
-            PointerMap::const_iterator pitr  = pointers_.find(*itr);
+        for (std::list<int>::iterator itr = unusedIDs.begin(); itr != unusedIDs.end(); ++itr) {
+            PointerMap::iterator pitr  = pointers_.find(*itr);
             if (pitr != pointers_.end()) {
                 removedPointers_.insert(PointerPair((*pitr).first, (*pitr).second));
                 pointers_.erase(pitr);
