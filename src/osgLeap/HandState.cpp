@@ -97,18 +97,33 @@ namespace osgLeap {
 
         osgLeap::Controller::instance()->addListener(*this);
 
+        std::vector<std::string> filenames;
+        filenames.push_back("nohand.png");
+        filenames.push_back("hand0.png");
+        filenames.push_back("hand1.png");
+        filenames.push_back("hand2.png");
+        filenames.push_back("hand3.png");
+        filenames.push_back("hand4.png");
+        filenames.push_back("hand5.png");
+
         // Load textures for hands visualization.
         // Note that all hands images must be either in the same
         // directory as the executable, or in the current working
         // directory or in a path that is defined in the OSG_FILE_PATH
-        // system enviroment variable
-        handsTextures_.push_back(osgDB::readImageFile("nohand.png"));
-        handsTextures_.push_back(osgDB::readImageFile("hand0.png"));
-        handsTextures_.push_back(osgDB::readImageFile("hand1.png"));
-        handsTextures_.push_back(osgDB::readImageFile("hand2.png"));
-        handsTextures_.push_back(osgDB::readImageFile("hand3.png"));
-        handsTextures_.push_back(osgDB::readImageFile("hand4.png"));
-        handsTextures_.push_back(osgDB::readImageFile("hand5.png"));
+        // system environment variable
+        for (int i = 0; i < filenames.size(); ++i) {
+        	osg::ref_ptr<osg::Image> img = osgDB::readImageFile(filenames.at(i));
+        	if (img.valid()) {
+            	handsTextures_.push_back(img);
+        	} else {
+        		OSG_FATAL<<"osgLeap::HandState constructor: Failed to read hands image '"<<filenames.at(i)<<"'."<<std::endl;
+        	}
+        }
+
+        if (handsTextures_.size() < filenames.size()) {
+        	OSG_FATAL<<"osgLeap::HandState constructor: Failed to read hands images. Got: "<<handsTextures_.size()<<", expected: "<<filenames.size()<<std::endl;
+        	return;
+        }
 
         // Prescale images to square resolution so we avoid doing that
         // during update
