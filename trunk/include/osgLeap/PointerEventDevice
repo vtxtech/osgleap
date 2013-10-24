@@ -96,8 +96,7 @@ namespace osgLeap {
 
         osg::ref_ptr<osgGA::GUIEventAdapter> makeMouseEvent(osgLeap::Pointer* p);
         osgGA::GUIEventAdapter* mouseMotion(osgLeap::Pointer* p);
-        osgGA::GUIEventAdapter* mouseButtonPress(osgLeap::Pointer* p);
-        osgGA::GUIEventAdapter* mouseButtonRelease(osgLeap::Pointer* p);
+        osgGA::GUIEventAdapter* mouseButton(osgLeap::Pointer* p, int button, osgGA::GUIEventAdapter::EventType eventType);
 
         osgGA::GUIEventAdapter* touchBegan(osgLeap::Pointer* p);
         osgGA::GUIEventAdapter* touchMoved(osgLeap::Pointer* p);
