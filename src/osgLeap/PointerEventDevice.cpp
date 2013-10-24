@@ -76,26 +76,13 @@ namespace osgLeap {
         return e;
     }
 
-    osgGA::GUIEventAdapter* PointerEventDevice::mouseButtonPress(osgLeap::Pointer* p)
+    osgGA::GUIEventAdapter* PointerEventDevice::mouseButton(osgLeap::Pointer* p, int button, osgGA::GUIEventAdapter::EventType eventType)
     {
-        OSG_DEBUG<<"mouseButtonPress: "<<p->getPosition()<<std::endl;
-        //_eventQueue->mouseButtonPress(p->getPosition().x(), p->getPosition().y(), 1);
+        OSG_DEBUG<<"mouseButton: "<<p->getPosition()<<" "<<(eventType==osgGA::GUIEventAdapter::PUSH?"pressed":"released")<<std::endl;
         osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
-        e->setButtonMask(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
-        e->setEventType(osgGA::GUIEventAdapter::PUSH);
-        e->setButton(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
-        _eventQueue->addEvent(e);
-        return e;
-    }
-
-    osgGA::GUIEventAdapter* PointerEventDevice::mouseButtonRelease(osgLeap::Pointer* p)
-    {
-        OSG_DEBUG<<"mouseButtonRelease: "<<p->getPosition()<<std::endl;
-        //_eventQueue->mouseButtonRelease(p->getPosition().x(), p->getPosition().y(), 1);
-        osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
-        e->setButtonMask(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
-        e->setEventType(osgGA::GUIEventAdapter::RELEASE);
-        e->setButton(osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON);
+        e->setButtonMask(button);
+        e->setEventType(eventType);
+        e->setButton(button);
         _eventQueue->addEvent(e);
         return e;
     }
@@ -196,8 +183,8 @@ namespace osgLeap {
             if (doClick) {
                 if (emulationMode_ == MOUSE) {
                     // Fire a mouse press and a mouse release event on "left mouse button"
-                    mouseButtonPress(itr->second);
-                    mouseButtonRelease(itr->second);
+                    mouseButton(itr->second, osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON, osgGA::GUIEventAdapter::PUSH);
+                    mouseButton(itr->second, osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON, osgGA::GUIEventAdapter::RELEASE);
                 } else if (emulationMode_ == TOUCH) {
                     // Fire a touch began and a touch ended event with 1 tap
                     touchBegan(itr->second);
