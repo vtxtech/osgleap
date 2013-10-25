@@ -1,0 +1,69 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_LISTENER_
+#define OSGLEAP_LISTENER_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+
+//-- Leap --//
+#include <Leap.h>
+
+//-- OSG --//
+#include <osg/Notify>
+#include <osg/Object>
+
+namespace osgLeap {
+
+    // A reference counted version of Leap::Listener
+    class Listener: public Leap::Listener, public osg::Object {
+    public:
+        META_Object(osgLeap, Listener);
+
+        Listener() {}
+        Listener(const Listener& hs,
+            const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY) {}
+        virtual ~Listener() {}
+
+        virtual void onInit(const Leap::Controller&) {
+            OSG_DEBUG<<"Initialized"<<std::endl;
+        }
+
+        virtual void onConnect(const Leap::Controller&) {
+            OSG_DEBUG<<"Connected"<<std::endl;
+        }
+
+        virtual void onDisconnect(const Leap::Controller&) {
+            // Note: not dispatched when running in a debugger.
+            OSG_DEBUG<<"Disconnected"<<std::endl;
+        }
+
+        virtual void onExit(const Leap::Controller&) {
+            OSG_DEBUG<<"Exited"<<std::endl;
+        }
+
+        virtual void onFrame(const Leap::Controller&) {
+            OSG_DEBUG<<"Frame"<<std::endl;
+        }
+
+        virtual void onFocusGained(const Leap::Controller&) {
+            OSG_DEBUG<<"Focus Gained"<<std::endl;
+        }
+
+        virtual void onFocusLost(const Leap::Controller&) {
+            OSG_DEBUG<<"Focus Lost"<<std::endl;
+        }
+
+    };
+
+} /* namespace osgLeap */
+
+#endif /* OSGLEAP_LISTENER_ */

@@ -1,0 +1,133 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_POINTER_
+#define OSGLEAP_POINTER_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+
+//-- OSG: osg --//
+#include <osg/Referenced>
+#include <osg/Timer>
+#include <osg/Vec2>
+
+//-- STL --//
+#include <map>
+
+namespace osgLeap {
+
+    // A class that represents a single pointer which is calculated from a
+    // finger or tool pointing at the screen
+    class OSGLEAP_EXPORT Pointer: public osg::Referenced {
+    public:
+        Pointer(const osg::Vec2& position, const osg::Vec2& resolution, int pointableID): position_(position),
+            relativePosition_(osg::Vec2(0.0f, 0.0f)),
+            relativePositionInScreenCoordinates_(osg::Vec2(0.0f, 0.0f)),
+            lastPosition_(osg::Vec2(0.0f, 0.0f)),
+            resolution_(resolution),
+            pointableID_(pointableID),
+            deltaMax_(20.0f),
+            isNew_(true)
+        {
+            setTimedPosition(position.x(), position.y());
+        }
+
+        osg::Vec2 getPosition() { return position_; }
+        const osg::Vec2& getPosition() const { return position_; }
+
+        osg::Vec2 getRelativePosition() { return relativePosition_; }
+        const osg::Vec2& getRelativePosition() const { return relativePosition_; }
+
+        osg::Vec2 getRelativePositionInScreenCoordinates() {
+            return relativePositionInScreenCoordinates_;
+        }
+        const osg::Vec2& getRelativePositionInScreenCoordinates() const {
+            return relativePositionInScreenCoordinates_;
+        }
+
+        void setPosition(const osg::Vec2& pos) {
+            if (time_ == 0 || ((pos - timedPosition_).length() > deltaMax_)) {
+                setTimedPosition(pos);
+            }
+            relativePosition_ = osg::Vec2(position_.x()/resolution_.x(), position_.y()/resolution_.y());
+            relativePositionInScreenCoordinates_ = osg::Vec2((2*relativePosition_.x())-1, (2*relativePosition_.y())-1);
+
+            lastPosition_ = position_;
+            position_ = pos;
+            isNew_ = false;
+        }
+        void setPosition(float x, float y) { setPosition(osg::Vec2(x, y)); }
+
+        osg::Vec2 getResolution() { return resolution_; }
+        const osg::Vec2& getResolution() const { return resolution_; }
+
+        void setResolution(const osg::Vec2& resolution) {
+            resolution_ = resolution;
+        }
+        void setResolution(float x, float y) { setResolution(osg::Vec2(x, y)); }
+
+        bool hasMoved() {
+            return (lastPosition_ != position_);
+        }
+        bool isNew() {
+            return isNew_;
+        }
+
+        void setTimedPosition(const osg::Vec2& pos) { timedPosition_ = pos; time_ = osg::Timer::instance()->tick(); }
+        void setTimedPosition(float x, float y) {  setTimedPosition(osg::Vec2(x, y)); }
+        float getDeltaMax() { return deltaMax_; }
+
+        float clickTimeProgress(int time)
+        {
+            double delta = osg::Timer::instance()->delta_m(time_, osg::Timer::instance()->tick());
+            if ((time_ != 0) && (delta > time)) {
+                return 1.0f;
+            } else {
+                if (time <= 0.0f || time_ <= 0.0f) return 0.0f;
+                return delta/time;
+            }
+        }
+
+        bool clickTimeHasElapsed(int time)
+        {
+            double delta = osg::Timer::instance()->delta_m(time_, osg::Timer::instance()->tick());
+            if ((time_ != 0) && (delta > time)) {
+                time_ = 0;
+                return true;
+            }
+
+            return false;
+        }
+
+        int getPointableID() { return pointableID_; }
+        int getPointableID() const { return pointableID_; }
+
+    private: 
+        osg::Timer_t time_;
+        osg::Vec2 timedPosition_;
+        float deltaMax_;
+        bool isNew_;
+        
+        osg::Vec2 position_;
+        osg::Vec2 relativePosition_;
+        osg::Vec2 relativePositionInScreenCoordinates_;
+        osg::Vec2 lastPosition_;
+        int pointableID_;
+
+        osg::Vec2 resolution_;
+    };
+
+    typedef std::map<int, osg::ref_ptr<Pointer> > PointerMap;
+    typedef std::pair<int, osg::ref_ptr<Pointer> > PointerPair;
+
+} /* namespace osgLeap */
+
+#endif /* OSGLEAP_POINTER_ */

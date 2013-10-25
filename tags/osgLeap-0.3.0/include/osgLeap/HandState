@@ -1,0 +1,71 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_HANDSTATE_
+#define OSGLEAP_HANDSTATE_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+#include <osgLeap/Listener>
+
+//-- Leap --//
+#include <Leap.h>
+
+//-- OSG: osg --//
+#include <osg/Geode>
+#include <osg/Image>
+#include <osg/Texture2D>
+
+//-- STL --//
+#include <vector>
+
+namespace osgLeap {
+
+    // A class that displays the state of the hands tracked
+    class OSGLEAP_EXPORT HandState: public osg::Geode, public Leap::Listener
+    {
+    public:
+        typedef std::vector<osg::ref_ptr<osg::Image> > ImageVector;
+
+        enum WhichHand {
+            LEFT_HAND = 0,
+            RIGHT_HAND = 1
+        };
+
+        // Default constructor
+        HandState();
+
+        // Copy constructor
+        HandState(const HandState& hs,
+            const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
+
+        // Virtual destructor
+        virtual ~HandState();
+
+        META_Object( osgLeap, HandState );
+
+        // Called by Leap::Controller asynchronously
+        virtual void onFrame(const Leap::Controller&);
+
+        // Call this during update cycle to update HandState
+        virtual void update();
+
+    protected:
+        Leap::Frame frame_;
+        osg::ref_ptr<osg::Texture2D> lhTex_;
+        osg::ref_ptr<osg::Texture2D> rhTex_;
+        ImageVector handsTextures_;
+
+        void createHandQuad(WhichHand hand);
+    };
+
+} /* namespace osgLeap */
+
+#endif /* OSGLEAP_HANDSTATE_ */
