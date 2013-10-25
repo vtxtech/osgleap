@@ -30,7 +30,9 @@ namespace osgLeap {
 
     void PointerEventDevice::sendEvent(const osgGA::GUIEventAdapter& ea)
     {
+#ifdef _DEBUG
         OSG_NOTICE<<"PointerEventDevice::sendEvent"<<std::endl;
+#endif
     }
 
     bool PointerEventDevice::hasIntersections(osgLeap::Pointer* p) {
@@ -40,7 +42,9 @@ namespace osgLeap {
             if (getView()->computeIntersections(getView()->getCamera(), osgUtil::Intersector::VIEW, p->getPosition().x(), p->getPosition().y(), intersections, getTraversalMask())) {
                 if (intersections.size() > 0) {
                     hasIntersections = true;
+#ifdef _DEBUG
                     OSG_NOTICE<<"I HAVE INTERSECTIONS"<<std::endl;
+#endif
                 }
             }
         }
@@ -69,7 +73,9 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::mouseMotion(osgLeap::Pointer* p)
     {
-        OSG_DEBUG_FP<<"mouseMotion: "<<p->getPosition()<<std::endl;
+#ifdef _DEBUG
+        OSG_NOTICE<<"mouseMotion: "<<p->getPosition()<<std::endl;
+#endif
         osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
         e->setEventType(e->getButtonMask() ? osgGA::GUIEventAdapter::DRAG : osgGA::GUIEventAdapter::MOVE);
         _eventQueue->addEvent(e);
@@ -78,7 +84,9 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::mouseButton(osgLeap::Pointer* p, int button, osgGA::GUIEventAdapter::EventType eventType)
     {
-        OSG_DEBUG<<"mouseButton: "<<p->getPosition()<<" "<<(eventType==osgGA::GUIEventAdapter::PUSH?"pressed":"released")<<std::endl;
+#ifdef _DEBUG
+        OSG_NOTICE<<"mouseButton: "<<p->getPosition()<<" "<<(eventType==osgGA::GUIEventAdapter::PUSH?"pressed":"released")<<std::endl;
+#endif
         osg::ref_ptr<osgGA::GUIEventAdapter> e = makeMouseEvent(p);
         e->setButtonMask(button);
         e->setEventType(eventType);
@@ -89,7 +97,9 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::touchBegan(osgLeap::Pointer* p)
     {
-        OSG_DEBUG<<"touchBegan: "<<p->getPointableID()<<std::endl;
+#ifdef _DEBUG
+        OSG_NOTICE<<"touchBegan: "<<p->getPointableID()<<std::endl;
+#endif
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
         osgGA::GUIEventAdapter* e = _eventQueue->touchBegan(p->getPointableID(), osgGA::GUIEventAdapter::TOUCH_BEGAN, pos.x(), pos.y());
         e->setWindowWidth(p->getResolution().x());
@@ -99,7 +109,9 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::touchMoved(osgLeap::Pointer* p)
     {
-        OSG_DEBUG_FP<<"touchMoved: "<<p->getPosition()<<std::endl;
+#ifdef _DEBUG
+        OSG_NOTICE<<"touchMoved: "<<p->getPosition()<<std::endl;
+#endif
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
         osgGA::GUIEventAdapter* e = _eventQueue->touchMoved(p->getPointableID(), osgGA::GUIEventAdapter::TOUCH_MOVED, pos.x(), pos.y());
         e->setWindowWidth(p->getResolution().x());
@@ -109,7 +121,9 @@ namespace osgLeap {
 
     osgGA::GUIEventAdapter* PointerEventDevice::touchEnded(osgLeap::Pointer* p, unsigned int taps)
     {
-        OSG_DEBUG<<"touchEnded: "<<p->getPointableID()<<std::endl;
+#ifdef _DEBUG
+        OSG_NOTICE<<"touchEnded: "<<p->getPointableID()<<std::endl;
+#endif
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
         osgGA::GUIEventAdapter* e = _eventQueue->touchEnded(p->getPointableID(), osgGA::GUIEventAdapter::TOUCH_ENDED, pos.x(), pos.y(), taps);
         e->setWindowWidth(p->getResolution().x());
@@ -132,8 +146,10 @@ namespace osgLeap {
         intersectionController_->update();
 
         PointerMap removedPointers = intersectionController_->getRemovedPointers();
-        for (PointerMap::iterator itr = removedPointers.begin(); itr != removedPointers.end(); ++itr) {
-            touchEnded(itr->second, 0);
+        if (emulationMode_ == TOUCH) {
+            for (PointerMap::iterator itr = removedPointers.begin(); itr != removedPointers.end(); ++itr) {
+                touchEnded(itr->second, 0);
+            }
         }
 
         PointerMap pointers = intersectionController_->getPointers();
