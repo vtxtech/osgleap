@@ -34,7 +34,7 @@ namespace osgLeap {
 			lastFrame_(Leap::Frame())
         {
             setCapabilities(RECEIVE_EVENTS);
-			osgLeap::Controller::instance()->addListener(*this);
+			controller_.addListener(*this);
         }
         
         // Copy-constructor
@@ -49,7 +49,7 @@ namespace osgLeap {
         // Destructor
         ~Device()
         {
-			osgLeap::Controller::instance()->removeListener(*this);
+			controller_.removeListener(*this);
         }
 
         virtual bool checkEvents();
@@ -58,6 +58,7 @@ namespace osgLeap {
 		virtual void onFrame(const Leap::Controller&);
 
     private:
+		Leap::Controller controller_;
 		Leap::Frame frame_;
         Leap::Frame lastFrame_;
     };

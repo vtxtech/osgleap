@@ -42,14 +42,14 @@ namespace osgLeap {
         handsDistance_(0.0f),
         currentAction_(LM_None)
     {
-  //      osgLeap::Controller::instance()->addListener(*this);
-		//OSG_DEBUG_FP<<"Added osgLeap::OrbitManipulator "<<this<<" to osgLeap::Controller::instance() "<<osgLeap::Controller::instance()<<std::endl;
+  //      osgLeap::Controller::instance()->controller()->addListener(*this);
+		//OSG_DEBUG_FP<<"Added osgLeap::OrbitManipulator "<<this<<" to osgLeap::Controller::instance()->controller() "<<osgLeap::Controller::instance()->controller()<<std::endl;
     }
 
     OrbitManipulator::~OrbitManipulator()
     {
-  //      osgLeap::Controller::instance()->removeListener(*this);
-		//OSG_DEBUG_FP<<"Removed osgLeap::OrbitManipulator "<<this<<" from osgLeap::Controller::instance() "<<osgLeap::Controller::instance()<<std::endl;
+  //      osgLeap::Controller::instance()->controller()->removeListener(*this);
+		//OSG_DEBUG_FP<<"Removed osgLeap::OrbitManipulator "<<this<<" from osgLeap::Controller::instance()->controller() "<<osgLeap::Controller::instance()->controller()<<std::endl;
     }
 
     OrbitManipulator::OrbitManipulator(const OrbitManipulator& lm,

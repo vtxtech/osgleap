@@ -95,7 +95,7 @@ namespace osgLeap {
         // Initialize UpdateCallback to update myself during updateTraversal
         addUpdateCallback(new UpdateCallback());
 
-        osgLeap::Controller::instance()->addListener(*this);
+        controller_.addListener(*this);
 
         std::vector<std::string> filenames;
         filenames.push_back("nohand.png");
@@ -150,7 +150,7 @@ namespace osgLeap {
 
     HandState::~HandState()
     {
-        osgLeap::Controller::instance()->removeListener(*this);
+        controller_.removeListener(*this);
     }
 
     HandState::HandState(const HandState& hs,
