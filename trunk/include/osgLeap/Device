@@ -13,7 +13,6 @@
 
 //-- Project --//
 #include <osgLeap/Export>
-#include <osgLeap/Controller>
 
 //-- Leap --//
 #include <Leap.h>

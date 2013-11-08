@@ -10,9 +10,6 @@
 
 #include <osgLeap/HUDCamera>
 
-//-- Project --//
-#include <osgLeap/Controller>
-
 //-- OSG: osgDB --//
 #include <osgDB/ReadFile>
 
