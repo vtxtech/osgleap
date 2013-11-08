@@ -23,7 +23,7 @@
 namespace osgLeap {
 
     // A CameraManipulator for interacting with the Leap Motion device
-    class OSGLEAP_EXPORT OrbitManipulator: public osgGA::OrbitManipulator, public Leap::Listener
+    class OSGLEAP_EXPORT OrbitManipulator: public osgGA::OrbitManipulator
     {
         typedef osgGA::OrbitManipulator inherited;
     public:
@@ -83,15 +83,7 @@ namespace osgLeap {
         // Called from within OpenSceneGraph EventTraversal
         virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
 
-        // Called by Leap::Controller asynchronously
-        virtual void onFrame(const Leap::Controller&);
-
     protected:
-        Leap::Frame frame_;
-        osg::Timer_t frameStamp_;
-        Leap::Frame lastFrame_;
-        osg::Timer_t lastFrameStamp_;
-
         int32_t leftHandID_;
         int32_t rightHandID_;
         Leap::Hand lastLeftHand_;

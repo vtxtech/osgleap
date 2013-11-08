@@ -28,6 +28,7 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
+#include <osgLeap/Device>
 #include <osgLeap/PointerPositionListener>
 #include <osgLeap/HandState>
 #include <osgLeap/HUDCamera>
@@ -113,6 +114,10 @@ int main(int argc, char** argv)
 
     // Adds the osgLeap::HandState visualizer
     hudCamera->addChild(new osgLeap::HandState());
+
+	// Add a osg::Device which generates OSG events based on the data Leap Motion sends
+	// Note that this requires OSG-3.1.4 or higher
+	viewer.addDevice(new osgLeap::Device());
 
     viewer.addSlave(hudCamera, false);
 

@@ -21,6 +21,8 @@ INCLUDE_DIRECTORIES(${OSG_INCLUDE_DIR})
 
 SET(TARGET_H
     ${HEADER_PATH}/Controller
+    ${HEADER_PATH}/Device
+    ${HEADER_PATH}/Event
     ${HEADER_PATH}/Export
 	${HEADER_PATH}/HandState
 	${HEADER_PATH}/HUDCamera
@@ -34,6 +36,7 @@ SET(TARGET_H
 
 SET(TARGET_SRC
 	Controller.cpp
+	Device.cpp
 	HandState.cpp
 	HUDCamera.cpp
 	PointerPositionListener.cpp
