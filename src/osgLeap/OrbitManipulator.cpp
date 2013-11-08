@@ -11,7 +11,6 @@
 #include <osgLeap/OrbitManipulator>
 
 //-- Project --//
-#include <osgLeap/Controller>
 #include <osgLeap/Event>
 
 //-- OSG: osg --//

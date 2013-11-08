@@ -20,7 +20,6 @@ INCLUDE_DIRECTORIES(${LEAP_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${OSG_INCLUDE_DIR})
 
 SET(TARGET_H
-    ${HEADER_PATH}/Controller
     ${HEADER_PATH}/Device
     ${HEADER_PATH}/Event
     ${HEADER_PATH}/Export
@@ -35,7 +34,6 @@ SET(TARGET_H
 )
 
 SET(TARGET_SRC
-	Controller.cpp
 	Device.cpp
 	HandState.cpp
 	HUDCamera.cpp

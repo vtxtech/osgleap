@@ -10,9 +10,6 @@
 
 #include <osgLeap/HandState>
 
-//-- Project --//
-#include <osgLeap/Controller>
-
 //-- OSG: osgDB --//
 #include <osgDB/ReadFile>
 

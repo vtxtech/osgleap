@@ -10,9 +10,6 @@
 
 #include <osgLeap/PointerPositionListener>
 
-//-- Project --//
-#include <osgLeap/Controller>
-
 //-- OSG: osg --//
 #include <osg/CopyOp>
 #include <osg/Referenced>
