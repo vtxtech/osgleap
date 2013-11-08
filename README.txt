@@ -7,7 +7,7 @@
 # Change Notes osgLeap v.0.3.1
 # ------------------------------
 #
-# * Nothing happened, yet.
+# * Build support for LeapSDK-1.0.9
 #
 # -----------------------------------------------------------------------------
 # Change Notes osgLeap v.0.3.0
