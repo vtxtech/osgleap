@@ -1,44 +1,47 @@
-/*
-* Library osgLeap
-* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
-*
-* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
-* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-*
-*/
-
-#ifndef OSGLEAP_CONTROLLER_
-#define OSGLEAP_CONTROLLER_ 1
-
-//-- Project --//
-#include <osgLeap/Export>
-
-//-- Leap --//
-#include <Leap.h>
-
-//-- OSG: osg --//
-#include <osg/ref_ptr>
-#include <osg/Referenced>
-
-namespace osgLeap {
-
-    // A reference counted version of Leap::Controller
-    // Instead of using one "new osg::LeapController()" per class utilizing
-    // the Leap Motion device, please consider using the singleton instance
-    // Controller* osgLeap::Controller::instance() instead
-    class OSGLEAP_EXPORT Controller: public Leap::Controller, public osg::Referenced {
-    public:
-        Controller() {}
-        virtual ~Controller() {}
-
-        void destruct();
-
-        static Controller* instance(bool erase = false);
-    private:
-        osg::ref_ptr<Controller> instance_;
-    };
-
-} /* namespace osgLeap */
-
-#endif /* OSGLEAP_CONTROLLER_ */
+///*
+//* Library osgLeap
+//* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+//*
+//* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+//* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+//* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//*
+//*/
+//
+//#ifndef OSGLEAP_CONTROLLER_
+//#define OSGLEAP_CONTROLLER_ 1
+//
+////-- Project --//
+//#include <osgLeap/Export>
+//
+////-- Leap --//
+//#include <Leap.h>
+//
+////-- OSG: osg --//
+//#include <osg/ref_ptr>
+//#include <osg/Referenced>
+//
+//namespace osgLeap {
+//
+//    // A reference counted version of Leap::Controller
+//    // Instead of using one "new osg::LeapController()" per class utilizing
+//    // the Leap Motion device, please consider using the singleton instance
+//    // Leap::Controller* osgLeap::Controller::instance()->controller() instead
+//    class OSGLEAP_EXPORT Controller: public osg::Referenced {
+//    public:
+//        Controller();
+//        virtual ~Controller();
+//
+//		static osgLeap::Controller* instance();
+//
+//		Leap::Controller* controller() {
+//			return &controller_;
+//		}
+//
+//	private:
+//        Leap::Controller controller_;
+//    };
+//
+//} /* namespace osgLeap */
+//
+//#endif /* OSGLEAP_CONTROLLER_ */

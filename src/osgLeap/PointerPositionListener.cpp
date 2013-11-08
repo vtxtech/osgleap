@@ -27,19 +27,21 @@ namespace osgLeap {
         frame_(Leap::Frame()), lastFrame_(Leap::Frame()), camera_(NULL),
         gestures_(Leap::GestureList())
     {
-        osgLeap::Controller::instance()->addListener(*this);
+        controller_.addListener(*this);
+		controller_.enableGesture(Leap::Gesture::TYPE_SCREEN_TAP);
     }
 
      PointerPositionListener::PointerPositionListener(osg::Camera* camera): camera_(camera),
             windowwidth_(800), windowheight_(600), frame_(Leap::Frame()), lastFrame_(Leap::Frame()),
             gestures_(Leap::GestureList())
     {
-        osgLeap::Controller::instance()->addListener(*this);
+        controller_.addListener(*this);
+		controller_.enableGesture(Leap::Gesture::TYPE_SCREEN_TAP);
     }
 
     PointerPositionListener::~PointerPositionListener()
     {
-        osgLeap::Controller::instance()->removeListener(*this);
+        controller_.removeListener(*this);
     }
 
     PointerPositionListener::PointerPositionListener(const PointerPositionListener& lm,

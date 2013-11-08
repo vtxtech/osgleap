@@ -58,6 +58,7 @@ namespace osgLeap {
         virtual void update();
 
     protected:
+		Leap::Controller controller_;
         Leap::Frame frame_;
         osg::ref_ptr<osg::Texture2D> lhTex_;
         osg::ref_ptr<osg::Texture2D> rhTex_;

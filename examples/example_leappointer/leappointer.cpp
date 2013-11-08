@@ -245,7 +245,7 @@ int main(int argc, char** argv)
     }
     while (arguments.read("--screentap")) {
         clickMode = osgLeap::PointerEventDevice::SCREENTAP;
-        osgLeap::Controller::instance()->enableGesture(Leap::Gesture::TYPE_SCREEN_TAP);
+        //osgLeap::Controller::instance()->controller()->enableGesture(Leap::Gesture::TYPE_SCREEN_TAP);
         clickEmulateStillStandTime = 0;
     }
 
