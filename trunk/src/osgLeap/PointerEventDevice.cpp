@@ -30,9 +30,7 @@ namespace osgLeap {
 
     void PointerEventDevice::sendEvent(const osgGA::GUIEventAdapter& ea)
     {
-#ifdef _DEBUG
-        OSG_NOTICE<<"PointerEventDevice::sendEvent"<<std::endl;
-#endif
+        OSG_DEBUG_FP<<"PointerEventDevice::sendEvent"<<std::endl;
     }
 
     bool PointerEventDevice::hasIntersections(osgLeap::Pointer* p) {
@@ -42,9 +40,7 @@ namespace osgLeap {
             if (getView()->computeIntersections(getView()->getCamera(), osgUtil::Intersector::VIEW, p->getPosition().x(), p->getPosition().y(), intersections, getTraversalMask())) {
                 if (intersections.size() > 0) {
                     hasIntersections = true;
-#ifdef _DEBUG
-                    OSG_NOTICE<<"I HAVE INTERSECTIONS"<<std::endl;
-#endif
+                    OSG_DEBUG_FP<<"I HAVE INTERSECTIONS"<<std::endl;
                 }
             }
         }
