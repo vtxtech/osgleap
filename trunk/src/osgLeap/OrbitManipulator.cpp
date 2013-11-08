@@ -87,7 +87,7 @@ namespace osgLeap {
                     << ", tools: " << frame.tools().count()
                     << ", gestures: " << frame.gestures().count() << std::endl;
 
-                if (!frame.hands().empty()) {
+                if (!frame.hands().isEmpty()) {
                     Leap::Hand handRight;
                     Leap::Hand handLeft;
                     if (leftHandID_ == -1 || rightHandID_ == -1 || (leftHandID_ == rightHandID_ && frame.hands().count() > 1)) {
