@@ -23,6 +23,10 @@
 namespace osgLeap {
 
     // A CameraManipulator for interacting with the Leap Motion device
+	//   Note that this Manipulator works with USER events derived from
+	//   osgLeap::Event, only. All other events are ignored.
+	//   Please add an osgLeap::Device to your osgViewer::View*
+	//   to generate those events.
     class OSGLEAP_EXPORT OrbitManipulator: public osgGA::OrbitManipulator
     {
         typedef osgGA::OrbitManipulator inherited;
@@ -81,6 +85,10 @@ namespace osgLeap {
         void setMode(const Mode& mode) { mode_ = mode; }
 
         // Called from within OpenSceneGraph EventTraversal
+		//   Note that this->handle(..) handles USER events derived from
+		//   osgLeap::Event, only. All other events are ignored.
+		//   Please add an osgLeap::Device to your osgViewer::View*
+		//   to generate those events.
         virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
 
     protected:

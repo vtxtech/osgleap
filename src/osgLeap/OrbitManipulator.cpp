@@ -41,14 +41,12 @@ namespace osgLeap {
         handsDistance_(0.0f),
         currentAction_(LM_None)
     {
-  //      osgLeap::Controller::instance()->controller()->addListener(*this);
-		//OSG_DEBUG_FP<<"Added osgLeap::OrbitManipulator "<<this<<" to osgLeap::Controller::instance()->controller() "<<osgLeap::Controller::instance()->controller()<<std::endl;
+		// Nothing to be done.
     }
 
     OrbitManipulator::~OrbitManipulator()
     {
-  //      osgLeap::Controller::instance()->controller()->removeListener(*this);
-		//OSG_DEBUG_FP<<"Removed osgLeap::OrbitManipulator "<<this<<" from osgLeap::Controller::instance()->controller() "<<osgLeap::Controller::instance()->controller()<<std::endl;
+		// Nothing to be done.
     }
 
     OrbitManipulator::OrbitManipulator(const OrbitManipulator& lm,
@@ -232,7 +230,7 @@ namespace osgLeap {
 								manipulator_->setRotation(addRotX*addRotY*addRotZ*rot);
 #else
 								// At the moment, Fixed VerticalAxis is the only mode supported
-								// because rotateTrackball is not yet working correctly.
+								// because rotateTrackball is not working correctly, yet.
 								if( true /*manipulator_->getVerticalAxisFixed()*/ ) {
 									Leap::Vector movement = (getPalmPosition(handRight)-getPalmPosition(lastRightHand_))/reference_length;
 									OSG_DEBUG<<"FIXED VERTICAL"<<std::endl;
@@ -267,12 +265,5 @@ namespace osgLeap {
 
         return osgGA::OrbitManipulator::handle(ea, us);
     }
-
-  //  void OrbitManipulator::onFrame(const Leap::Controller& controller) {
-		//// Get the most recent frame and store it to later use in handle(...)
-  //      frame_ = controller.frame();
-		//OSG_DEBUG_FP<<"onFrame: frame_.fingers().count()="<<frame_.fingers().count()<<std::endl;
-  //      frameStamp_ = osg::Timer::instance()->tick();
-  //  }
 
 }
