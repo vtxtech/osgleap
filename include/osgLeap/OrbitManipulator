@@ -91,6 +91,10 @@ namespace osgLeap {
 		//   to generate those events.
         virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
 
+		int getCurrentAction() const {
+			return currentAction_;
+		}
+
     protected:
         int32_t leftHandID_;
         int32_t rightHandID_;

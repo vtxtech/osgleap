@@ -109,6 +109,8 @@ namespace osgLeap {
 							rotateWithFixedVertical( movement.x, movement.y );
 							zoomModel(-movement.z);
 							us.requestRedraw();
+						} else {
+							currentAction_ = LM_None;
 						}
 					} else if (mode_ == Trackball) {
 						if (frame.hands().count() > 0 && handRight.fingers().count() >= 3) {
