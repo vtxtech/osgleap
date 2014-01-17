@@ -22,7 +22,6 @@
 #include <osgWidget/WindowManager>
 #include <osgWidget/ViewerEventHandlers>
 
-#include <osgLeap/Controller>
 #include <osgLeap/HandState>
 #include <osgLeap/HUDCamera>
 #include <osgLeap/PointerPositionListener>
