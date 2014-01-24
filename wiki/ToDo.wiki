@@ -5,4 +5,4 @@
   * First person walk navigation
   * Classes for gesture recognition adding more gestures to detect which are not detected by the Leap SDK, yet.
   * Fancyness improvement
-  * Add support to use custom graphics for HandState and custom geometry and effects for Pointer display
+  * Add support to use custom graphics for HandState and effects for Pointer display
