@@ -15,6 +15,10 @@
 # * osgLeap::OrbitManipulator now reacts with the osgLeap::Events generated
 #     by osgLeap::Device. This enables support of ON_DEMAND rendering.
 #
+# * PointerGraphicsUpdateCallback can now be subclassed, so that overriding
+#     PointerGraphicsUpdateCallback::createPointerGeode enables any custom
+#     'mouse pointer' graphics by returning your custom osg::Geode there
+#
 # -----------------------------------------------------------------------------
 # Change Notes osgLeap v.0.3.0
 # ------------------------------
