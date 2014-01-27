@@ -39,7 +39,8 @@ namespace osgLeap {
         lastLeftHand_(Leap::Hand()),
         lastRightHand_(Leap::Hand()),
         handsDistance_(0.0f),
-        currentAction_(LM_None)
+        currentAction_(LM_None),
+		modifier_(false)
     {
 		// Nothing to be done.
     }
@@ -57,7 +58,8 @@ namespace osgLeap {
         lastLeftHand_(Leap::Hand()),
         lastRightHand_(Leap::Hand()),
         handsDistance_(0.0f),
-        currentAction_(LM_None)
+        currentAction_(LM_None),
+		modifier_(lm.modifier_)
     {
 
     }
@@ -100,14 +102,26 @@ namespace osgLeap {
 
 					if (mode_ == SingleHanded) {
 						if (frame.hands().count() > 0 && handRight.fingers().count() >= 3) {
-							if (!(currentAction_ & LM_Rotate )) {
+							if ((!modifier_ && !(currentAction_ & LM_Rotate))||(modifier_ && !(currentAction_ & LM_Pan))) {
 								lastRightHand_ = handRight;
 							}
-							currentAction_ = LM_Rotate | LM_Zoom;
-							Leap::Vector movement = (getPalmPosition(handRight)-getPalmPosition(lastRightHand_))/reference_length;
-							OSG_DEBUG<<"FIXED VERTICAL"<<std::endl;
-							rotateWithFixedVertical( movement.x, movement.y );
-							zoomModel(-movement.z);
+							if (!modifier_) {
+								currentAction_ = LM_Rotate | LM_Zoom;
+								Leap::Vector movement = (getPalmPosition(handRight)-getPalmPosition(lastRightHand_))/reference_length;
+								OSG_DEBUG<<"FIXED VERTICAL"<<std::endl;
+								rotateWithFixedVertical( movement.x, movement.y );
+								zoomModel(-movement.z);
+							} else {
+								currentAction_ = LM_Pan;
+								osg::Vec3 deltaPos = osg::Vec3(-(getPalmPosition(handRight).x-getPalmPosition(lastRightHand_).x), -(getPalmPosition(handRight).y-getPalmPosition(lastRightHand_).y), -(getPalmPosition(handRight).z-getPalmPosition(lastRightHand_).z));
+								if (deltaPos.x() != 0.0f || deltaPos.y() != 0.0f || deltaPos.z() != 0.0f) { 
+									// scale by model size to fit for very large and very small models
+									double factor = 2*us.asView()->getCamera()->getBound().radius();
+									// scale translation units. leap tracking: mm, OSG units: m
+									osg::Vec3 deltaTrans((deltaPos*factor/1000.0f));
+									panModel(deltaTrans.x(), deltaTrans.y());
+								}
+							}
 							us.requestRedraw();
 						} else {
 							currentAction_ = LM_None;
