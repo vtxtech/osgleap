@@ -45,10 +45,11 @@ namespace osgLeap {
 
             // SingleHanded is the most simple manipulator mode
             // Use one hand (opened) for rotating and zooming. Panning is
-            // not supported.
+            // supported through a modifier key, only.
             // - Move hand towards screen to zoom out, opposite direction
             //   zooms in
             // - Move hand upwards or sidewards to rotate
+			// - Set modifier to true for panning
             SingleHanded = 2,
 
             // Trackball SingleHanded mode
@@ -82,7 +83,11 @@ namespace osgLeap {
 
         META_Object( osgLeap, OrbitManipulator );
 
+		// Switch Mode during runtime (two-handed, single-handed etc.)
         void setMode(const Mode& mode) { mode_ = mode; }
+
+		// Set modifier to switch from rotate/zoom to pan in SingleHanded mode
+		void setModifier(bool state) { modifier_ = state; }
 
         // Called from within OpenSceneGraph EventTraversal
 		//   Note that this->handle(..) handles USER events derived from
@@ -104,6 +109,7 @@ namespace osgLeap {
 
         int currentAction_;
         Mode mode_;
+		bool modifier_;
     };
 
 } /* namespace osgLeap */
