@@ -80,7 +80,11 @@ int main(int argc, char** argv)
         mode = osgLeap::OrbitManipulator::Trackball;
     }
 
-    viewer.setCameraManipulator( new osgLeap::OrbitManipulator(mode) );
+	osg::ref_ptr<osgLeap::OrbitManipulator> om = new osgLeap::OrbitManipulator(mode);
+	om->setModifierKey('p');
+	om->setModifierMode(osgLeap::OrbitManipulator::MM_SIMPLE);
+
+    viewer.setCameraManipulator( om );
 
     // load the data
     osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);
