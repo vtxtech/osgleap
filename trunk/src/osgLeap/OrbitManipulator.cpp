@@ -40,7 +40,9 @@ namespace osgLeap {
         lastRightHand_(Leap::Hand()),
         handsDistance_(0.0f),
         currentAction_(LM_None),
-		modifier_(false)
+		modifier_(false),
+		modifierKey_(-1),
+		modifierMode_(MM_SIMPLE)
     {
 		// Nothing to be done.
     }
@@ -59,13 +61,30 @@ namespace osgLeap {
         lastRightHand_(Leap::Hand()),
         handsDistance_(0.0f),
         currentAction_(LM_None),
-		modifier_(lm.modifier_)
+		modifier_(lm.modifier_),
+		modifierKey_(lm.modifierKey_),
+		modifierMode_(lm.modifierMode_)
     {
 
     }
 
     bool OrbitManipulator::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us )
     {
+		// Added to handle modifierKey_
+		if (modifierMode_ == MM_TOGGLE) {
+			if (ea.getEventType() == osgGA::GUIEventAdapter::KEYUP) {
+				if (modifierKey_ != -1 && ea.getKey() != -1 && ea.getKey() == modifierKey_) {
+					setModifierState(!modifier_);
+				}
+			}
+		} else if (modifierMode_ == MM_SIMPLE) {
+			if (ea.getEventType() == osgGA::GUIEventAdapter::KEYUP || ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN) {
+				if (modifierKey_ != -1 && ea.getKey() != -1 && ea.getKey() == modifierKey_) {
+					setModifierState(ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN);
+				}
+			}
+		}
+
         if (ea.getEventType() == osgGA::GUIEventAdapter::USER) {
 			const osgLeap::Event* ev = dynamic_cast<const osgLeap::Event*>(&ea);
 			if (ev != NULL) {

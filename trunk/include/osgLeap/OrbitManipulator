@@ -71,6 +71,13 @@ namespace osgLeap {
             LM_Zoom = 4
         };
 
+		enum ModifierMode {
+			// enable modifier state upon key press disabled upon key release (default)
+			MM_SIMPLE,
+			// toggle modifier state once modifier key is pressed
+			MM_TOGGLE
+		};
+
         // Default constructor
         OrbitManipulator(const Mode& mode = TwoHanded);
 
@@ -87,7 +94,17 @@ namespace osgLeap {
         void setMode(const Mode& mode) { mode_ = mode; }
 
 		// Set modifier to switch from rotate/zoom to pan in SingleHanded mode
-		void setModifier(bool state) { modifier_ = state; }
+		void setModifierState(bool state) { modifier_ = state; }
+
+		// Setup key to toggle modifier state (default: None)
+		//   Note, that you might also setup an Key Event Handler in your
+		//   application toggling setModifierState(bool) from there.
+		//   This method is added for convenience.
+		void setModifierKey(int key) { modifierKey_ = key; }
+		
+		// Set mode how ModifierKey acts: MM_SIMPLE (default: active as long as key is pressed),
+		//                             or MM_TOGGLE (toggled upon key release);
+		void setModifierMode(ModifierMode mode) { modifierMode_ = mode; }
 
         // Called from within OpenSceneGraph EventTraversal
 		//   Note that this->handle(..) handles USER events derived from
@@ -110,6 +127,8 @@ namespace osgLeap {
         int currentAction_;
         Mode mode_;
 		bool modifier_;
+		int modifierKey_;
+		ModifierMode modifierMode_;
     };
 
 } /* namespace osgLeap */
