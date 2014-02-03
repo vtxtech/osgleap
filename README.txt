@@ -4,7 +4,7 @@
 # -----------------------------------------------------------------------------
 #
 # -----------------------------------------------------------------------------
-# Change Notes osgLeap v.0.4.0
+# Change Notes osgLeap v.0.5.0
 # ------------------------------
 #
 # * Build support for LeapSDK-1.0.9
@@ -18,6 +18,16 @@
 # * PointerGraphicsUpdateCallback can now be subclassed, so that overriding
 #     PointerGraphicsUpdateCallback::createPointerGeode enables any custom
 #     'mouse pointer' graphics by returning your custom osg::Geode there
+#
+# * Added a modifier state for toggling ON/OFF panning in single-handed mode
+#     Panning in single-handed mode can either be enabled by the modifier key
+#     (if set), or directly by using OrbitManipulator::setModifierState(bool)
+#     using a custom EventHandler in your application.
+#     The behaviour of the modifier key can be customized using
+#     setModifierMode(ModifierMode). ModifierMode supports either:
+#       - MM_SIMPLE: Enable modifier (panning) while key is pressed and 
+#                    disable modifier upon key release
+#       - MM_TOGGLE: Toggle Modifier (panning) once the key is released
 #
 # -----------------------------------------------------------------------------
 # Change Notes osgLeap v.0.3.0
