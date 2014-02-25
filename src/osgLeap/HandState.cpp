@@ -15,7 +15,10 @@
 
 namespace osgLeap {
 
-    // UpdateCallback "auto-updates" the osgLeap::HandState Geode from within
+	typedef std::vector<osg::ref_ptr<osg::Image> > ImageVector;
+	static ImageVector sHandsTextures;
+
+	// UpdateCallback "auto-updates" the osgLeap::HandState Geode from within
     // the update traversal of the osgViewer
     class UpdateCallback: public osg::NodeCallback
     {
@@ -103,41 +106,43 @@ namespace osgLeap {
         filenames.push_back("hand4.png");
         filenames.push_back("hand5.png");
 
-        // Load textures for hands visualization.
-        // Note that all hands images must be either in the same
-        // directory as the executable, or in the current working
-        // directory or in a path that is defined in the OSG_FILE_PATH
-        // system environment variable
-        for (int i = 0; i < filenames.size(); ++i) {
-        	osg::ref_ptr<osg::Image> img = osgDB::readImageFile(filenames.at(i));
-        	if (img.valid()) {
-            	handsTextures_.push_back(img);
-        	} else {
-        		OSG_FATAL<<"osgLeap::HandState constructor: Failed to read hands image '"<<filenames.at(i)<<"'."<<std::endl;
-        	}
-        }
+		if (sHandsTextures.size() == 0) { 
+			// Load textures for hands visualization.
+			// Note that all hands images must be either in the same
+			// directory as the executable, or in the current working
+			// directory or in a path that is defined in the OSG_FILE_PATH
+			// system environment variable
+			for (int i = 0; i < filenames.size(); ++i) {
+        		osg::ref_ptr<osg::Image> img = osgDB::readImageFile(filenames.at(i));
+        		if (img.valid()) {
+            		sHandsTextures.push_back(img);
+        		} else {
+        			OSG_FATAL<<"osgLeap::HandState constructor: Failed to read hands image '"<<filenames.at(i)<<"'."<<std::endl;
+        		}
+			}
 
-        if (handsTextures_.size() < filenames.size()) {
-        	OSG_FATAL<<"osgLeap::HandState constructor: Failed to read hands images. Got: "<<handsTextures_.size()<<", expected: "<<filenames.size()<<std::endl;
+			// Prescale images to square resolution so we avoid doing that
+			// during update
+			sHandsTextures.at(0)->scaleImage(1024, 1024, 1);
+			sHandsTextures.at(1)->scaleImage(1024, 1024, 1);
+			sHandsTextures.at(2)->scaleImage(1024, 1024, 1);
+			sHandsTextures.at(3)->scaleImage(1024, 1024, 1);
+			sHandsTextures.at(4)->scaleImage(1024, 1024, 1);
+			sHandsTextures.at(5)->scaleImage(1024, 1024, 1);
+			sHandsTextures.at(6)->scaleImage(1024, 1024, 1);
+		}
+
+        if (sHandsTextures.size() < filenames.size()) {
+        	OSG_FATAL<<"osgLeap::HandState constructor: Failed to read hands images. Got: "<<sHandsTextures.size()<<", expected: "<<filenames.size()<<std::endl;
         	return;
         }
-
-        // Prescale images to square resolution so we avoid doing that
-        // during update
-        handsTextures_.at(0)->scaleImage(1024, 1024, 1);
-        handsTextures_.at(1)->scaleImage(1024, 1024, 1);
-        handsTextures_.at(2)->scaleImage(1024, 1024, 1);
-        handsTextures_.at(3)->scaleImage(1024, 1024, 1);
-        handsTextures_.at(4)->scaleImage(1024, 1024, 1);
-        handsTextures_.at(5)->scaleImage(1024, 1024, 1);
-        handsTextures_.at(6)->scaleImage(1024, 1024, 1);
 
         // Set DataVariance to DYNAMIC to avoid the texture changes being
         // optimized away.
         lhTex_->setDataVariance(osg::Object::DYNAMIC);
-        lhTex_->setImage(handsTextures_.at(0));
+        lhTex_->setImage(sHandsTextures.at(0));
         rhTex_->setDataVariance(osg::Object::DYNAMIC);
-        rhTex_->setImage(handsTextures_.at(0));
+        rhTex_->setImage(sHandsTextures.at(0));
 
         // Now finally, create the QUAD geometry to put our texture onto
         // Note that this method should be called once per hand, only.
@@ -169,8 +174,8 @@ namespace osgLeap {
         Leap::Frame frame = frame_;
 
         // Setup "no-hand" image as default
-        osg::Image* lh = handsTextures_.at(0);
-        osg::Image* rh = handsTextures_.at(0);
+        osg::Image* lh = sHandsTextures.at(0);
+        osg::Image* rh = sHandsTextures.at(0);
 
         // Continue if there it at least one hand, only.
         if (frame.hands().count() > 0) {
@@ -182,12 +187,12 @@ namespace osgLeap {
             int l_fingers = left.fingers().count()+1;
             // Avoid crash if textures were not loaded
             // or if we have more than 5 fingers per hand ;-)
-            if (r_fingers > handsTextures_.size()) {
-                OSG_WARN<<"WARN: Not enough images ("<<handsTextures_.size()<<") for right hand finger count ("<<r_fingers-1<<"), aborting HandState::update."<<std::endl;
+            if (r_fingers > sHandsTextures.size()) {
+                OSG_WARN<<"WARN: Not enough images ("<<sHandsTextures.size()<<") for right hand finger count ("<<r_fingers-1<<"), aborting HandState::update."<<std::endl;
                 return;
             }
-            if (l_fingers > handsTextures_.size()) {
-                OSG_WARN<<"WARN: Not enough images ("<<handsTextures_.size()<<") for left hand finger count ("<<l_fingers-1<<"), aborting HandState::update."<<std::endl;
+            if (l_fingers > sHandsTextures.size()) {
+                OSG_WARN<<"WARN: Not enough images ("<<sHandsTextures.size()<<") for left hand finger count ("<<l_fingers-1<<"), aborting HandState::update."<<std::endl;
                 return;
             }
             // Compare hands IDs to determine if leftmost hand and rightmost
@@ -196,10 +201,10 @@ namespace osgLeap {
                 // Assume right hand if we have one hand, only.
                 // (As we cannot distinguish between the actual right and left
                 // hand. We operate on "leftmost" and "rightmost" hands only.)
-                rh = handsTextures_.at(r_fingers);
+                rh = sHandsTextures.at(r_fingers);
             } else {
-                rh = handsTextures_.at(r_fingers);
-                lh = handsTextures_.at(l_fingers);
+                rh = sHandsTextures.at(r_fingers);
+                lh = sHandsTextures.at(l_fingers);
             }
         }
 

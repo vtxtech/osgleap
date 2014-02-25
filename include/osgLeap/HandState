@@ -32,8 +32,6 @@ namespace osgLeap {
     class OSGLEAP_EXPORT HandState: public osg::Geode, public Leap::Listener
     {
     public:
-        typedef std::vector<osg::ref_ptr<osg::Image> > ImageVector;
-
         enum WhichHand {
             LEFT_HAND = 0,
             RIGHT_HAND = 1
@@ -62,7 +60,6 @@ namespace osgLeap {
         Leap::Frame frame_;
         osg::ref_ptr<osg::Texture2D> lhTex_;
         osg::ref_ptr<osg::Texture2D> rhTex_;
-        ImageVector handsTextures_;
 
         void createHandQuad(WhichHand hand);
     };
