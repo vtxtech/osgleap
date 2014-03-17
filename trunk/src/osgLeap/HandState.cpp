@@ -46,12 +46,20 @@ namespace osgLeap {
         geom->setVertexArray(va);
         osg::ref_ptr<osg::Vec3Array> na = new osg::Vec3Array();
         na->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
-        geom->setNormalArray(na);
-        geom->setNormalBinding(osg::Geometry::BIND_PER_PRIMITIVE_SET);
+#ifndef PRE_OSG_320_ARRAYBINDINGS
+		geom->setNormalArray(na, osg::Array::BIND_PER_PRIMITIVE_SET);
+#else
+		geom->setNormalArray(na);
+		geom->setNormalBinding(osg::Geometry::BIND_PER_PRIMITIVE_SET);
+#endif
         osg::Vec4Array* colors = new osg::Vec4Array();
         colors->push_back(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
-        geom->setColorArray(colors);
-        geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+#ifndef PRE_OSG_320_ARRAYBINDINGS
+        geom->setColorArray(colors, osg::Array::BIND_OVERALL);
+#else
+		geom->setColorArray(colors);
+		geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+#endif
         geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
         osg::ref_ptr<osg::Vec2Array> texCoords = new osg::Vec2Array();
