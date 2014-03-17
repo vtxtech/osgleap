@@ -30,8 +30,14 @@ SET(OSGLEAP_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 #######################################
 # Library files
 #######################################
-#FIND_PACKAGE( OpenGL REQUIRED )
-FIND_PACKAGE( osg REQUIRED )
+#FIND_PACKAGE( osg REQUIRED )
+# As of this version we use OpenSceneGraph macros instead of OSG...
+FIND_PACKAGE( OpenSceneGraph REQUIRED )
+
+IF(NOT(${_osg_VERSION_MAJOR} GREATER 2 AND ${_osg_VERSION_MINOR} GREATER 1))
+	# OSG-3.2.0 and above
+	ADD_DEFINITIONS(-DPRE_OSG_320_ARRAYBINDINGS)
+ENDIF()
 
 SET(INSTALL_BINDIR "bin")
 SET(INSTALL_LIBDIR "lib")
