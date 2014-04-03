@@ -1,0 +1,59 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_EVENT_
+#define OSGLEAP_EVENT_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+
+//-- Leap --//
+#include <Leap.h>
+
+//-- OSG: osgGA --//
+#include <osgGA/GUIEventAdapter>
+
+namespace osgLeap {
+
+	class OSGLEAP_EXPORT Event: public osgGA::GUIEventAdapter
+    {
+    public:
+		META_Object(osgLeap, Event);
+
+        // Constructor
+        Event(): osgGA::GUIEventAdapter(),
+			frame_(Leap::Frame())
+        {
+			setEventType(osgGA::GUIEventAdapter::USER);
+        }
+        
+        // Copy-constructor
+        Event(const Event& nc, const osg::CopyOp& op): osgGA::GUIEventAdapter(nc, op),
+			frame_(nc.frame_)
+        {
+            setEventType(osgGA::GUIEventAdapter::USER);
+        }
+
+        // Destructor
+        virtual ~Event()
+        {
+            
+        }
+
+		const Leap::Frame& getFrame() const { return frame_; }
+		void setFrame(const Leap::Frame& frame) { frame_ = frame; }
+
+    private:
+		Leap::Frame frame_;
+    };
+
+} // namespace osgLeap
+
+#endif // OSGLEAP_EVENT_

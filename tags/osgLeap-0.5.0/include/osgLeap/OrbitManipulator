@@ -1,0 +1,136 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_ORBITMANIPULATOR_
+#define OSGLEAP_ORBITMANIPULATOR_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+
+//-- Leap --//
+#include <Leap.h>
+
+//-- OSG: osgGA --//
+#include <osgGA/OrbitManipulator>
+
+namespace osgLeap {
+
+    // A CameraManipulator for interacting with the Leap Motion device
+	//   Note that this Manipulator works with USER events derived from
+	//   osgLeap::Event, only. All other events are ignored.
+	//   Please add an osgLeap::Device to your osgViewer::View*
+	//   to generate those events.
+    class OSGLEAP_EXPORT OrbitManipulator: public osgGA::OrbitManipulator
+    {
+        typedef osgGA::OrbitManipulator inherited;
+    public:
+        enum Mode {
+            // TwoHanded is currently default.
+            // PAN: Single hand - hand opened (fingers spread a bit)
+            // ZOOM: Two hands - left hand closed (fist), right hand opened
+            //      (fingers spread a bit)
+            // ROTATE: Two hands - both hands opened (fingers spread a bit)
+            //         To stop rotating fully close both hands.
+            // This mode requires some more training than the others
+            // Grant yourself trying some minutes actually training to 
+            // pan, rotate and zoom to get comfortable with this mode.
+            TwoHanded = 1,
+
+            // SingleHanded is the most simple manipulator mode
+            // Use one hand (opened) for rotating and zooming. Panning is
+            // supported through a modifier key, only.
+            // - Move hand towards screen to zoom out, opposite direction
+            //   zooms in
+            // - Move hand upwards or sidewards to rotate
+			// - Set modifier to true for panning
+            SingleHanded = 2,
+
+            // Trackball SingleHanded mode
+            // Uses one hand for 6DOF control. Movement is activated when
+            // one opened hand is detected. Be sure to position your arm
+            // perpendicularly to the Leap Motion.
+            // Imagine you are holding a basketball in your hand with palm
+            // down. Open your hand widely.
+            // - Move hand left/right/top/down for panning
+            // - Move hand towards screen to zoom
+            // - Rotate your hand to rotate the object
+            Trackball = 3
+        };
+
+        enum Action {
+            LM_None = 0,
+            LM_Pan = 1,
+            LM_Rotate = 2,
+            LM_Zoom = 4
+        };
+
+		enum ModifierMode {
+			// enable modifier state upon key press disabled upon key release (default)
+			MM_SIMPLE,
+			// toggle modifier state once modifier key is pressed
+			MM_TOGGLE
+		};
+
+        // Default constructor
+        OrbitManipulator(const Mode& mode = TwoHanded);
+
+        // Copy constructor
+        OrbitManipulator(const OrbitManipulator& lm,
+            const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
+
+        // Virtual destructor
+        virtual ~OrbitManipulator();
+
+        META_Object( osgLeap, OrbitManipulator );
+
+		// Switch Mode during runtime (two-handed, single-handed etc.)
+        void setMode(const Mode& mode) { mode_ = mode; }
+
+		// Set modifier to switch from rotate/zoom to pan in SingleHanded mode
+		void setModifierState(bool state) { modifier_ = state; }
+
+		// Setup key to toggle modifier state (default: None)
+		//   Note, that you might also setup an Key Event Handler in your
+		//   application toggling setModifierState(bool) from there.
+		//   This method is added for convenience.
+		void setModifierKey(int key) { modifierKey_ = key; }
+		
+		// Set mode how ModifierKey acts: MM_SIMPLE (default: active as long as key is pressed),
+		//                             or MM_TOGGLE (toggled upon key release);
+		void setModifierMode(ModifierMode mode) { modifierMode_ = mode; }
+
+        // Called from within OpenSceneGraph EventTraversal
+		//   Note that this->handle(..) handles USER events derived from
+		//   osgLeap::Event, only. All other events are ignored.
+		//   Please add an osgLeap::Device to your osgViewer::View*
+		//   to generate those events.
+        virtual bool handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
+
+		int getCurrentAction() const {
+			return currentAction_;
+		}
+
+    protected:
+        int32_t leftHandID_;
+        int32_t rightHandID_;
+        Leap::Hand lastLeftHand_;
+        Leap::Hand lastRightHand_;
+        double handsDistance_;
+
+        int currentAction_;
+        Mode mode_;
+		bool modifier_;
+		int modifierKey_;
+		ModifierMode modifierMode_;
+    };
+
+} /* namespace osgLeap */
+
+#endif /* OSGLEAP_ORBITMANIPULATOR_ */

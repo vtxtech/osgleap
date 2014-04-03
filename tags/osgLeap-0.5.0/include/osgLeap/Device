@@ -1,0 +1,67 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_DEVICE_
+#define OSGLEAP_DEVICE_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+
+//-- Leap --//
+#include <Leap.h>
+
+//-- OSG: osgGA --//
+#include <osgGA/Device>
+
+namespace osgLeap {
+
+	class OSGLEAP_EXPORT Device: public osgGA::Device, public Leap::Listener
+    {
+    public:
+		META_Object(osgLeap, Device);
+
+        // Constructor
+        Device(): osgGA::Device(), Leap::Listener(),
+			frame_(Leap::Frame()),
+			lastFrame_(Leap::Frame())
+        {
+            setCapabilities(RECEIVE_EVENTS);
+			controller_.addListener(*this);
+        }
+        
+        // Copy-constructor
+        Device(const Device& nc, const osg::CopyOp& op): osgGA::Device(nc, op),
+			Leap::Listener(),
+			frame_(Leap::Frame()),
+			lastFrame_(Leap::Frame())
+        {
+            
+        }
+
+        // Destructor
+        ~Device()
+        {
+			controller_.removeListener(*this);
+        }
+
+        virtual bool checkEvents();
+        virtual void sendEvent(const osgGA::GUIEventAdapter& ea);
+
+		virtual void onFrame(const Leap::Controller&);
+
+    private:
+		Leap::Controller controller_;
+		Leap::Frame frame_;
+        Leap::Frame lastFrame_;
+    };
+
+} // namespace osgLeap
+
+#endif // OSGLEAP_DEVICE_
