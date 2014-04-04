@@ -19,7 +19,7 @@
 
 namespace osgLeap {
 
-    osg::ref_ptr<osg::Node> PointerGraphicsUpdateCallback::createPointerGeode() {
+    osg::ref_ptr<osg::Node> PointerGraphicsUpdateCallback::createPointerGeode(unsigned int /*num*/) {
         osg::ref_ptr<osg::Geode> sphere = new osg::Geode();
         float radius = 10.0f;
         osg::TessellationHints* hints = new osg::TessellationHints();
@@ -126,17 +126,20 @@ namespace osgLeap {
                     }
                 } else {
                     // Add new pointer
-                    pat = new osg::PositionAttitudeTransform();
-                    pat->setUserValue<int>("PointableID", itr->first);
-                    pat->addChild(createPointerGeode());
-                    // Add to scene graph
-                    group->addChild(pat);
-                    // Add to local reference map
-                    transforms.insert(PatPair(itr->first, pat));
+					osg::ref_ptr<osg::Node> pt = createPointerGeode(transforms.size());
+					if (pt.valid()) {
+						pat = new osg::PositionAttitudeTransform();
+						pat->setUserValue<int>("PointableID", itr->first);
+						pat->addChild(pt);
+						// Add to scene graph
+						group->addChild(pat);
+						// Add to local reference map
+						transforms.insert(PatPair(itr->first, pat));
+					}
                 }
 
                 osg::Vec3 vec = osg::Vec3(p->getPosition().x(), p->getPosition().y(), 0.0f);
-                pat->setPosition(vec);
+				if (pat.valid()) pat->setPosition(vec);
             }
         }
 

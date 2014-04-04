@@ -58,7 +58,7 @@ namespace osgLeap {
 	protected:
         // To alter the geometry of a pointer, subclass
         // PointerGraphicsUpdateCallback overriding createPointerGeode
-        virtual osg::ref_ptr<osg::Node> createPointerGeode();
+        virtual osg::ref_ptr<osg::Node> createPointerGeode(unsigned int num);
 
     private:
         osg::ref_ptr<osgLeap::PointerPositionListener> intersectionController_;
