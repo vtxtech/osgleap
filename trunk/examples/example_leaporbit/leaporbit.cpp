@@ -114,7 +114,7 @@ int main(int argc, char** argv)
 
     if (windows.empty()) return 1;
 
-    osg::Camera* hudCamera = new osgLeap::HUDCamera(windows[0]);
+	osg::ref_ptr<osg::Camera> hudCamera = new osgLeap::HUDCamera(viewer.getCamera());
 
     // Adds the osgLeap::HandState visualizer
     hudCamera->addChild(new osgLeap::HandState());
@@ -122,6 +122,11 @@ int main(int argc, char** argv)
 	// Add a osg::Device which generates OSG events based on the data Leap Motion sends
 	// Note that this requires OSG-3.1.4 or higher
 	viewer.addDevice(new osgLeap::Device());
+
+	hudCamera->setGraphicsContext(windows[0]);
+	hudCamera->setViewport(0,0,windows[0]->getTraits()->width, windows[0]->getTraits()->height);
+	// ToDo/07.04.2014: Quick fix to have a Viewport in the master camera... why do we need this?
+	viewer.getCamera()->setViewport(0,0,windows[0]->getTraits()->width, windows[0]->getTraits()->height);
 
     viewer.addSlave(hudCamera, false);
 
