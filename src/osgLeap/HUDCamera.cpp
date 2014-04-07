@@ -18,33 +18,40 @@ namespace osgLeap {
     class ResizeUpdateCallback: public osg::NodeCallback
     {
     public:
-        ResizeUpdateCallback(osg::Camera* camera): camera_(camera)
+        ResizeUpdateCallback(osg::Camera* masterCamera, osg::Camera* slaveCamera): masterCamera_(masterCamera), slaveCamera_(slaveCamera)
         {
 
         }
 
         virtual void operator()(osg::Node* node, osg::NodeVisitor* nv)
         {
-            float windowheight = camera_->getGraphicsContext()->getTraits()->height;
-            float windowwidth  = camera_->getGraphicsContext()->getTraits()->width;
-
-            camera_->setProjectionMatrix(osg::Matrix::ortho2D(0.0f, windowwidth, 0.0f, windowheight));
-            camera_->setViewport(0, 0, windowwidth, windowheight);
-
+			if (masterCamera_->getViewport() != NULL) {
+				float windowheight = masterCamera_->getViewport()->height();
+				float windowwidth  = masterCamera_->getViewport()->width();
+				
+				slaveCamera_->setProjectionMatrix(osg::Matrix::ortho2D(0, windowwidth, 0, windowheight));
+			} else {
+				OSG_WARN<<"WARN: ResizeUpdateCallback::operator() -- masterCamera_ has no osg::Viewport defined!"<<std::endl;
+			}
             traverse(node, nv);
         }
 
     private:
-        osg::Camera* camera_;
+        osg::Camera* masterCamera_;
+        osg::Camera* slaveCamera_;
     };
 
-    HUDCamera::HUDCamera(osgViewer::GraphicsWindow* graphicsWindow): osg::Camera()
+    HUDCamera::HUDCamera(osg::Camera* masterCamera): osg::Camera()
     {
         // Initialize UpdateCallback to update myself during updateTraversal
-        addUpdateCallback(new ResizeUpdateCallback(this));
+        addUpdateCallback(new ResizeUpdateCallback(masterCamera, this));
 
         // set the projection matrix
-        setProjectionMatrix(osg::Matrix::ortho2D(0, 640, 0, 480));
+		if (masterCamera->getViewport() != NULL) {
+			setProjectionMatrix(osg::Matrix::ortho2D(0, masterCamera->getViewport()->width(), 0, masterCamera->getViewport()->height()));
+		} else {
+			OSG_WARN<<"WARN: HUDCamera::HUDCamera(osg::Camera* masterCamera) -- masterCamera has no osg::Viewport defined!"<<std::endl;
+		}
 
         // set the view matrix
         setReferenceFrame(osg::Transform::ABSOLUTE_RF);
@@ -58,8 +65,6 @@ namespace osgLeap {
 
         // we don't want the camera to grab event focus from the viewers main camera(s).
         setAllowEventFocus(false);
-
-        setGraphicsContext(graphicsWindow);
     }
 
     HUDCamera::~HUDCamera()
@@ -70,7 +75,7 @@ namespace osgLeap {
     }
 
     HUDCamera::HUDCamera(const HUDCamera& hs,
-        const osg::CopyOp& copyOp): osg::Camera(*this)
+        const osg::CopyOp& copyOp): osg::Camera(hs)
     {
 
     }

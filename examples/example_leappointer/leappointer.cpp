@@ -122,7 +122,7 @@ osgWidget::Box* createBox(const std::string& name, osgWidget::Box::BoxType bt) {
     return box;
 }
 
-void setupWidgets(osgViewer::Viewer* viewer, osg::Group* root)
+osg::ref_ptr<osg::Camera> setupWidgets(osgViewer::Viewer* viewer)
 {   
     osg::ref_ptr<osgWidget::WindowManager> wm = new osgWidget::WindowManager(
         viewer,
@@ -157,8 +157,6 @@ void setupWidgets(osgViewer::Viewer* viewer, osg::Group* root)
 
     osg::Camera* camera = wm->createParentOrthoCamera();
 
-    root->addChild(camera);
-
     viewer->addEventHandler(new osgWidget::MouseHandler(wm));
     viewer->addEventHandler(new osgWidget::KeyboardHandler(wm));
     viewer->addEventHandler(new osgWidget::ResizeHandler(wm, camera));
@@ -167,6 +165,8 @@ void setupWidgets(osgViewer::Viewer* viewer, osg::Group* root)
     viewer->addEventHandler(new osgViewer::WindowSizeHandler());
 
     wm->resizeAllWindows();
+
+	return camera;
 }
 
 int main(int argc, char** argv)
@@ -215,9 +215,6 @@ int main(int argc, char** argv)
 
     // ToDo/j.kroeger: Remove this...
     viewer.setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
-
-    // Setup example osgWidgets
-    setupWidgets(&viewer, root);
 
     // Defines the time that a pointer needs to stand still
     // before a mouse click is performed at the current position
@@ -275,16 +272,11 @@ int main(int argc, char** argv)
 
     viewer.realize();
 
-    // set up cameras to render on the first window available.
-    osgViewer::Viewer::Windows windows;
-    viewer.getWindows(windows);
-
-    if (windows.empty()) return 1;
-
-    osg::Camera* hudCamera = new osgLeap::HUDCamera(windows[0]);
+	osg::Camera* hudCamera = new osgLeap::HUDCamera(viewer.getCamera());
 
     // Adds the osgLeap::HandState visualizer
-    hudCamera->addChild(new osgLeap::HandState());
+	osg::Node* hands = new osgLeap::HandState();
+    hudCamera->addChild(hands);
 
     // Add some text to the HUD
     hudCamera->addChild(createText());
@@ -292,7 +284,7 @@ int main(int argc, char** argv)
     osg::ref_ptr<osg::Group> pointersGroup = new osg::Group();
     // PointerGraphicsUpdateCallback needs clickEmulateStillStandTime to visualize
     // the remaining time until the click is executed.
-    osg::ref_ptr<osgLeap::PointerGraphicsUpdateCallback> puc = new osgLeap::PointerGraphicsUpdateCallback(hudCamera, clickEmulateStillStandTime);
+	osg::ref_ptr<osgLeap::PointerGraphicsUpdateCallback> puc = new osgLeap::PointerGraphicsUpdateCallback(viewer.getCamera(), clickEmulateStillStandTime);
     pointersGroup->addUpdateCallback(puc);
     hudCamera->addChild(pointersGroup);
 
@@ -303,9 +295,46 @@ int main(int argc, char** argv)
         dev->setView(&viewer);
         dev->setTraversalMask(0xffffffff);
     }
+
     viewer.addDevice(dev);
 
-    viewer.addSlave(hudCamera, false);
+    // Setup example osgWidgets
+	osg::ref_ptr<osg::Camera> widgetCamera = setupWidgets(&viewer);
+
+	if ((osg::DisplaySettings::instance()->getStereoMode() == osg::DisplaySettings::HORIZONTAL_SPLIT ||
+		osg::DisplaySettings::instance()->getStereoMode() == osg::DisplaySettings::VERTICAL_SPLIT) &&
+		osg::DisplaySettings::instance()->getStereo())
+	{
+#if 1
+		// * When using this mode you should rely on images for displaying the 2d pointer
+		//   instead of 3d geometry as in this example
+		// ToDo/07.04.2014: Add an example on how to override PointerGraphicsUpdateCallback's
+		//                  virtual osg::ref_ptr<osg::Node> createPointerGeode(unsigned int num);
+
+		// Adding camera to scene graph works like charm in horizontal_split stereo mode
+		// but messes with the lighting as it is used from the scene
+		root->addChild(hudCamera);
+
+		// disable lighting on osgLeap::HandState to ensure it's correctly displayed
+		hands->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
+		root->addChild(widgetCamera);
+#else
+		// ToDo/07.04.2014: Implement CompositeViewer here...
+#endif
+	} else {
+		// does not work with horizontal_split stereo mode
+		osgViewer::Viewer::Windows windows;
+		viewer.getWindows(windows);
+
+		if (windows.empty()) return 1;
+
+		hudCamera->setGraphicsContext(windows[0]);
+		hudCamera->setViewport(0,0,windows[0]->getTraits()->width, windows[0]->getTraits()->height);    
+		viewer.addSlave(hudCamera, false);
+		root->addChild(widgetCamera);
+	}
+
 
     return viewer.run();
 

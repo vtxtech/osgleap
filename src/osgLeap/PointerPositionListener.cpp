@@ -79,8 +79,8 @@ namespace osgLeap {
         // Please use setResolution to update manually, if this PointerPositionListener
         // is constructed without reference camera.
         if (camera_ != NULL) {
-            windowheight_ = camera_->getGraphicsContext()->getTraits()->height;
-            windowwidth_  = camera_->getGraphicsContext()->getTraits()->width;
+			windowheight_ = camera_->getViewport()->height();
+            windowwidth_  = camera_->getViewport()->width();
         }
         osg::Vec2 resolution(windowwidth_, windowheight_);
 

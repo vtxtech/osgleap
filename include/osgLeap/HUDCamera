@@ -27,7 +27,7 @@ namespace osgLeap {
     {
     public:
         // Parameter-constructor
-        HUDCamera(osgViewer::GraphicsWindow* graphicsWindow);
+        HUDCamera(osg::Camera* masterCamera);
 
         // Copy-constructor
         HUDCamera(const HUDCamera& hs,
