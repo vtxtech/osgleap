@@ -54,6 +54,7 @@ namespace osgLeap {
 
     osg::ref_ptr<osgGA::GUIEventAdapter> PointerEventDevice::makeMouseEvent(osgLeap::Pointer* p)
     {
+#if 0 // cannot pick osgWidget HUD geodes -> might be a bug in osgWidget or I just dont understand how it works...
         osg::Vec2 pos = p->getRelativePositionInScreenCoordinates();
         //OSG_NOTICE<<"x="<<pos.x()<<", y="<<pos.y()<<std::endl;
         //OSG_NOTICE<<"Resolution: "<<p->getResolution().x()<<" / "<<p->getResolution().y()<<std::endl;
@@ -61,6 +62,16 @@ namespace osgLeap {
         e->setX(pos.x());
         e->setY(pos.y());
         e->setTime(_eventQueue->getTime());
+#else
+		osg::Vec2 pos = p->getPosition(); // e.g. 0..1280, 0..1024
+        osg::ref_ptr<osgGA::GUIEventAdapter> e = new osgGA::GUIEventAdapter(*osgGA::GUIEventAdapter::getAccumulatedEventState());
+        e->setX(pos.x());
+        e->setY(pos.y());
+		e->setXmin(0);
+		e->setXmax(p->getResolution().x());
+		e->setYmin(0);
+		e->setYmax(p->getResolution().y());
+#endif
         e->setWindowWidth(p->getResolution().x());
         e->setWindowHeight(p->getResolution().y());
         e->setMouseYOrientation(osgGA::GUIEventAdapter::Y_INCREASING_UPWARDS);
