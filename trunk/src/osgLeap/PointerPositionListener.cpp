@@ -70,7 +70,11 @@ namespace osgLeap {
 
     void PointerPositionListener::update()
     {
+#ifdef LEAPSDK_1X_COMPATIBILITY
         Leap::PointableList pl = frame_.pointables();
+#else
+		Leap::PointableList pl = frame_.pointables().extended();
+#endif
         Leap::Screen screen = screen_;
         gestures_ = frame_.gestures(lastFrame_);
         removedPointers_.clear();

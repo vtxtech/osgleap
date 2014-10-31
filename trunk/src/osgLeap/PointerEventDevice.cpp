@@ -187,7 +187,11 @@ namespace osgLeap {
                 {
                     if ((*gtr).type() == Leap::Gesture::TYPE_SCREEN_TAP)
                     {
-                        Leap::PointableList pointables = (*gtr).pointables();
+#ifdef LEAPSDK_1X_COMPATIBILITY
+						Leap::PointableList pointables = (*gtr).pointables();
+#else
+						Leap::PointableList pointables = (*gtr).pointables().extended();
+#endif
                         for (Leap::PointableList::const_iterator ptr = pointables.begin();
                             ptr != pointables.end(); ++ptr)
                         {

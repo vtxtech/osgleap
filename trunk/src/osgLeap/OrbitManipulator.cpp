@@ -93,7 +93,7 @@ namespace osgLeap {
 				OSG_DEBUG_FP << "Frame id: " << frame.id()
 					<< ", timestamp: " << frame.timestamp()
 					<< ", hands: " << frame.hands().count()
-					<< ", fingers: " << frame.fingers().count()
+					<< ", fingers.extended(): " << frame.fingers().extended().count()
 					<< ", tools: " << frame.tools().count()
 					<< ", gestures: " << frame.gestures().count() << std::endl;
 
@@ -120,7 +120,11 @@ namespace osgLeap {
 					double reference_length = 100.0f;
 
 					if (mode_ == SingleHanded) {
+#ifdef LEAPSDK_1X_COMPATIBILITY
 						if (frame.hands().count() > 0 && handRight.fingers().count() >= 3) {
+#else
+						if (frame.hands().count() > 0 && handRight.fingers().extended().count() >= 3) {
+#endif
 							if ((!modifier_ && !(currentAction_ & LM_Rotate))||(modifier_ && !(currentAction_ & LM_Pan))) {
 								lastRightHand_ = handRight;
 							}
@@ -146,7 +150,11 @@ namespace osgLeap {
 							currentAction_ = LM_None;
 						}
 					} else if (mode_ == Trackball) {
+#ifdef LEAPSDK_1X_COMPATIBILITY
 						if (frame.hands().count() > 0 && handRight.fingers().count() >= 3) {
+#else
+						if (frame.hands().count() > 0 && handRight.fingers().extended().count() >= 3) {
+#endif
 							if (!(currentAction_ & LM_Rotate)) {
 								lastRightHand_ = handRight;
 							}
@@ -201,15 +209,27 @@ namespace osgLeap {
 							currentAction_ = LM_None;
 						}
 					} else { //TwoHanded
+#ifdef LEAPSDK_1X_COMPATIBILITY
 						if (frame.hands().count() == 1 && handRight.fingers().count() >= 3) {
+#else
+						if (frame.hands().count() == 1 && handRight.fingers().extended().count() >= 3) {
+#endif
 							if ((currentAction_ != LM_Pan)) {
 								lastRightHand_ = handRight;
 							}
 							currentAction_ = LM_Pan;
+#ifdef LEAPSDK_1X_COMPATIBILITY
 						} else if (frame.hands().count() > 1 && handLeft.fingers().count() >= 3 && handRight.fingers().count() >=3) {
+#else
+						} else if (frame.hands().count() > 1 && handLeft.fingers().extended().count() >= 3 && handRight.fingers().extended().count() >=3) {
+#endif
 							currentAction_ = LM_Rotate;
 						} else if (frame.hands().count() > 1 && 
+#ifdef LEAPSDK_1X_COMPATIBILITY
 							((handLeft.fingers().count() >= 3 && handRight.fingers().count() <= 1) || (handLeft.fingers().count() <= 1 && handRight.fingers().count() >= 3 ) ))
+#else
+							((handLeft.fingers().extended().count() >= 3 && handRight.fingers().extended().count() <= 1) || (handLeft.fingers().extended().count() <= 1 && handRight.fingers().extended().count() >= 3)))
+#endif
 						{
 							if ((currentAction_ != LM_Zoom)) {
 								handsDistance_ = (getPalmPosition(handLeft) - getPalmPosition(handRight)).magnitude();
