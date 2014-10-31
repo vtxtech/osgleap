@@ -1,0 +1,73 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_POINTERGRAPHICSUPDATECALLBACK_
+#define OSGLEAP_POINTERGRAPHICSUPDATECALLBACK_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+#include <osgLeap/PointerPositionListener>
+
+//-- OSG: osg --//
+#include <osg/Camera>
+#include <osg/Geode>
+#include <osg/NodeCallback>
+
+namespace osgLeap {
+
+    class OSGLEAP_EXPORT PointerGraphicsUpdateCallback: public osg::NodeCallback
+    {
+    public:
+        typedef std::map<int, osg::ref_ptr<osg::PositionAttitudeTransform> > PatMap;
+        typedef std::pair<int, osg::ref_ptr<osg::PositionAttitudeTransform> > PatPair;
+
+        // Parameter-constructor with fixed screen resolution
+        // Use setResolution to update during runtime
+        PointerGraphicsUpdateCallback(int windowwidth = 640, int windowheight = 480, int referenceTime = 0): intersectionController_(new osgLeap::PointerPositionListener(windowwidth, windowheight)),
+            colorIndex_(0), referenceTime_(referenceTime)
+        {
+
+        }
+
+        // Parameter-constructor with auto-update to screen resolution
+        PointerGraphicsUpdateCallback(osg::Camera* camera, int referenceTime = 0): intersectionController_(new osgLeap::PointerPositionListener(camera)),
+            colorIndex_(0), referenceTime_(referenceTime)
+        {
+
+        }
+
+        // Copy-constructor
+        PointerGraphicsUpdateCallback(const PointerGraphicsUpdateCallback& nc, const osg::CopyOp& op): NodeCallback(nc, op),
+            intersectionController_(new osgLeap::PointerPositionListener(*nc.intersectionController_)),
+            colorIndex_(nc.colorIndex_), referenceTime_(nc.referenceTime_)
+        {
+
+        }
+
+        virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
+
+        osgLeap::PointerPositionListener* getPointerPositionListener() { return intersectionController_; }
+
+	protected:
+        // To alter the geometry of a pointer, subclass
+        // PointerGraphicsUpdateCallback overriding createPointerGeode
+        virtual osg::ref_ptr<osg::Node> createPointerGeode(unsigned int num);
+
+    private:
+        osg::ref_ptr<osgLeap::PointerPositionListener> intersectionController_;
+        int colorIndex_;
+        int referenceTime_;
+
+        osg::Vec4 getColor();
+    };
+
+} // namespace osgLeap
+
+#endif // OSGLEAP_POINTERGRAPHICSUPDATECALLBACK_

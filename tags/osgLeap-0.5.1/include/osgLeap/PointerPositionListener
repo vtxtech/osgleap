@@ -1,0 +1,95 @@
+/*
+* Library osgLeap
+* Copyright (C) 2013 Johannes Kroeger/vtxtech. All rights reserved.
+*
+* This file is licensed under the GNU Lesser General Public License 3 (LGPLv3),
+* but distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*
+*/
+
+#ifndef OSGLEAP_POINTERPOSITIONLISTENER_
+#define OSGLEAP_POINTERPOSITIONLISTENER_ 1
+
+//-- Project --//
+#include <osgLeap/Export>
+#include <osgLeap/Listener>
+#include <osgLeap/Pointer>
+
+//-- Leap --//
+#include <Leap.h>
+
+//-- OSG: osg --//
+#include <osg/Camera>
+
+//-- STL --//
+#include <map>
+
+namespace osgLeap {
+
+    // A class that supports calculation of screen intersections
+    class OSGLEAP_EXPORT PointerPositionListener: public osgLeap::Listener
+    {
+    public:
+        // Parameter-constructor with fixed screen resolution
+        // Use setResolution to update during runtime
+        PointerPositionListener(int windowwidth = 640, int windowheight = 480);
+
+        // Parameter-constructor with auto-update to screen resolution
+        PointerPositionListener(osg::Camera* camera);
+
+        // Copy constructor
+        PointerPositionListener(const PointerPositionListener& lm,
+            const osg::CopyOp& copyOp = osg::CopyOp::SHALLOW_COPY);
+
+        // Virtual destructor
+        virtual ~PointerPositionListener();
+
+        META_Object( osgLeap, PointerPositionListener );
+        
+        // Updates the current reference resolution to calculate actual
+        // pointer position from Leap Motion's relative position values
+        // (Leap reports values from 0.0 to 1.0 for both axes, but we
+        //  need absolute pixel coordinates here)
+        //
+        // NOTE: Setting resolution has no effect, if
+        // PointerGraphicsUpdateCallback was constructed with an osg::Camera
+        // as reference.
+        void setResolution(int windowwidth, int windowheight);
+
+        // Called by Leap::Controller asynchronously
+        virtual void onFrame(const Leap::Controller&);
+
+        // Call this during update cycle to update PointerMap
+        virtual void update();
+
+        // Returns a map with all pointers at the screen
+        // Note that this map is updated within update() which must be called 
+        // by the user
+        PointerMap getPointers() { return pointers_; }
+        const PointerMap& getPointers() const { return pointers_; }
+
+        // Returns a map with all pointers removed during the last update
+        // Note that this map is valid until next update() call, only
+        PointerMap getRemovedPointers() { return removedPointers_; }
+        const PointerMap& getRemovedPointers() const { return removedPointers_; }
+
+        const Leap::GestureList& getGestures() const { return gestures_; }
+
+    protected:
+		Leap::Controller controller_;
+        osg::ref_ptr<osg::Camera> camera_;
+        float windowheight_;
+        float windowwidth_;
+
+        Leap::Frame frame_;
+        Leap::Frame lastFrame_;
+        Leap::Screen screen_;
+        Leap::GestureList gestures_;
+        PointerMap pointers_;
+        PointerMap removedPointers_;
+    };
+
+} /* namespace osgLeap */
+
+#endif /* OSGLEAP_POINTERPOSITIONLISTENER_ */
