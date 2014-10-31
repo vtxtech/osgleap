@@ -8,12 +8,12 @@
 # $LEAPSDK_DIR is an environment variable that may be
 # used to locate the Leap Motion SDK directory
 #
-# Created by Johannes Scholz. 
+# Created by Johannes Kroeger. 
 
 FIND_PATH(LEAP_INCLUDE_DIR Leap.h
     $ENV{LEAPSDK_DIR}/include
     $ENV{LEAPSDK_DIR}
-	${CMAKE_INSTALL_PREFIX}/include
+    ${CMAKE_INSTALL_PREFIX}/include
     ~/Library/Frameworks
     /Library/Frameworks
     /usr/local/include
@@ -23,11 +23,12 @@ FIND_PATH(LEAP_INCLUDE_DIR Leap.h
 )
 
 FIND_LIBRARY(LEAP_LIBRARY 
-    NAMES Leap
+    NAMES Leap libLeap
     PATHS
     $ENV{LEAPSDK_DIR}/lib
     $ENV{LEAPSDK_DIR}
-	${CMAKE_INSTALL_PREFIX}/lib
+    ${CMAKE_INSTALL_PREFIX}/lib
+    ${CMAKE_INSTALL_PREFIX}/bin
     /usr/lib/Leap # default leap sdk install dir
     ~/Library/Frameworks
     /Library/Frameworks
@@ -38,11 +39,12 @@ FIND_LIBRARY(LEAP_LIBRARY
 )
 
 FIND_LIBRARY(LEAP_LIBRARY_DEBUG 
-    NAMES Leap${CMAKE_DEBUG_POSTFIX}
+    NAMES Leap${CMAKE_DEBUG_POSTFIX} libLeap${CMAKE_DEBUG_POSTFIX}
     PATHS
     $ENV{LEAPSDK_DIR}/lib
     $ENV{LEAPSDK_DIR}
-	${CMAKE_INSTALL_PREFIX}/lib
+    ${CMAKE_INSTALL_PREFIX}/lib
+    ${CMAKE_INSTALL_PREFIX}/bin
     ~/Library/Frameworks
     /Library/Frameworks
     /usr/local/lib
@@ -55,3 +57,4 @@ SET(LEAP_FOUND "NO")
 IF(LEAP_LIBRARY AND LEAP_INCLUDE_DIR)
     SET(LEAP_FOUND "YES")
 ENDIF(LEAP_LIBRARY AND LEAP_INCLUDE_DIR)
+
