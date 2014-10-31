@@ -191,8 +191,13 @@ namespace osgLeap {
             Leap::Hand left = frame.hands().leftmost();
             Leap::Hand right = frame.hands().rightmost();
             // Count the fingers we have detected...
+#ifdef LEAPSDK_1X_COMPATIBILITY
             int r_fingers = right.fingers().count()+1;
             int l_fingers = left.fingers().count()+1;
+#else
+            int r_fingers = right.fingers().extended().count()+1;
+			int l_fingers = left.fingers().extended().count()+1;
+#endif
             // Avoid crash if textures were not loaded
             // or if we have more than 5 fingers per hand ;-)
             if (r_fingers > sHandsTextures.size()) {
