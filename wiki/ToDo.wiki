@@ -1,6 +1,6 @@
 #summary ToDo-Page for osgLeap
 = Upcoming osgLeap-0.7 =
-  * Hand model visualization comparable to Leap Visualizer
+  * Hand 3D model visualization comparable to Leap Visualizer
 
 = Other tasks =
   * First person fly navigation
